@@ -1,0 +1,51 @@
+== Tags extension
+
+Created by: Benny Degezelle - gorilla-webdesign.be
+Version: 0.1.0
+Contact: benny AT gorilla-webdesign DOT be
+
+This extension enhances the page model with tagging capabilities. Tagging as in "2.0" and tagclouds. You could easily change it to also tag other models.
+
+
+== Requirements
+
+This extension depends on the shards extension and the has_many_polymorphs plugin
+Shards should be installed and loaded first; you can change the load order of extensions in config/environment.rb
+The has_many_polymorphs plugin goes into your vendor/plugins folder
+
+
+== Installation
+
+1. Copy the extension to your vendor/extensions directory as you would any other extension.
+2. From your instance root, run 'rake db:migrate:extensions'
+	WARNING: this will remove any existing 'meta_tags' and 'taggings' tables !!
+3. Then run 'rake radiant:extensions:tags:install'
+	Which will copy tags.css to your stylesheets folder. You might want to edit this file.
+4. Add the tags.css to your layout;
+    <link rel="stylesheet" type="text/css" href="/stylesheets/tags.css" />
+5. Make a page to sit in /search/by-tag, and give it the "Tag Search" pagetype. 
+	If you want to change this location, you can do so in config/tags.yml. 
+	Copy the results page example below, and modify to your likings;
+
+
+== Results page
+
+<r:search:empty>
+  <h2>I couldn't find anything named "<r:search:query/>".</h2>
+</r:search:empty>
+
+<r:search:results>
+  <h2>Found the following pages that are tagged with <em>"<r:search:query/>"</em>.</h2>
+
+  <ul>
+  <r:search:results:each>
+    <li><r:link/> - <r:author/> - <r:date/></li>
+  </r:search:results:each>
+  </ul>
+</r:search:results>
+
+
+== Tag cloud
+
+Use <r:tag_cloud /> anywhere you like.
+I made a stab at building the 'perfect' tag cloud markup, as inspired by a post on 24ways.org;  http://24ways.org/2006/marking-up-a-tag-cloud
