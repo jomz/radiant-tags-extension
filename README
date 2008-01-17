@@ -17,8 +17,7 @@ The has_many_polymorphs plugin goes into your vendor/plugins folder
 == Installation
 
 1. Copy the extension to your vendor/extensions directory as you would any other extension.
-2. From your instance root, run 'rake db:migrate:extensions'
-	WARNING: this will remove any existing 'meta_tags' and 'taggings' tables !!
+2. From your instance root, run 'rake db:migrate:extensions' to create meta_tags & taggings tables.
 3. Then run 'rake radiant:extensions:tags:install'
 	Which will copy tags.css to your stylesheets folder. You might want to edit this file.
 4. Add the tags.css to your layout;
@@ -31,7 +30,7 @@ The has_many_polymorphs plugin goes into your vendor/plugins folder
 == Results page
 
 <r:search:empty>
-  <h2>I couldn't find anything named "<r:search:query/>".</h2>
+  <h2>I couldn't find anything tagged with "<r:search:query/>".</h2>
 </r:search:empty>
 
 <r:search:results>
@@ -49,3 +48,8 @@ The has_many_polymorphs plugin goes into your vendor/plugins folder
 
 Use <r:tag_cloud /> anywhere you like.
 I made a stab at building the 'perfect' tag cloud markup, as inspired by a post on 24ways.org;  http://24ways.org/2006/marking-up-a-tag-cloud
+
+== Tag list
+
+Use <r:tag_list /> to get a list of linked-up tags for the current page. 
+Also works through children:each.

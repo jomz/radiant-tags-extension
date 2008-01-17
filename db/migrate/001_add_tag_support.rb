@@ -1,8 +1,5 @@
 class AddTagSupport < ActiveRecord::Migration
-  def self.up
-    # removes any existing meta_tags & taggins tables !!
-    # self.down
-    
+  def self.up    
     create_table :meta_tags do |t|
       t.column :name, :string, :null => false
     end

@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/../test_helper'
 class TagsExtensionTest < Test::Unit::TestCase
   
   fixtures :pages, :meta_tags, :taggings
-  test_helper :render, :pages
+  test_helper :render
   
   def setup
     @page = pages(:documentation)

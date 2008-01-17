@@ -6,7 +6,6 @@ class PageTaggabilityTest < Test::Unit::TestCase
   end
   
   def test_page_should_be_taggable
-    assert_equal @page.tag_list, ""
     assert true, @page.respond_to?("tag_with")
     assert_difference MetaTag, :count, 2 do
       @page.tag_with 'lorem ipsum'
