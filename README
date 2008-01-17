@@ -4,14 +4,15 @@ Created by: Benny Degezelle - gorilla-webdesign.be
 Version: 0.1.0
 Contact: benny AT gorilla-webdesign DOT be
 
-This extension enhances the page model with tagging capabilities. Tagging as in "2.0" and tagclouds. You could easily change it to also tag other models.
+This extension enhances the page model with tagging capabilities. Tagging as in "2.0" and tagclouds. You could change it to also tag other models.
 
 
 == Requirements
 
 This extension depends on the shards extension and the has_many_polymorphs plugin
 Shards should be installed and loaded first; you can change the load order of extensions in config/environment.rb
-The has_many_polymorphs plugin goes into your vendor/plugins folder
+The has_many_polymorphs plugin goes into your vendor/plugins folder.
+Get it from svn://rubyforge.org/var/svn/fauna/has_many_polymorphs/trunk
 
 
 == Installation
@@ -48,6 +49,7 @@ The has_many_polymorphs plugin goes into your vendor/plugins folder
 
 Use <r:tag_cloud /> anywhere you like.
 I made a stab at building the 'perfect' tag cloud markup, as inspired by a post on 24ways.org;  http://24ways.org/2006/marking-up-a-tag-cloud
+
 
 == Tag list
 
