@@ -2,13 +2,24 @@
 require File.dirname(__FILE__)+'/lib/tagging_methods'
 
 class TagsExtension < Radiant::Extension
-  version "1.0"
-  description "Makes pages taggable"
-  url "http://yourwebsite.com/tags"
+  version "1.1"
+  description "This extension enhances the page model with tagging capabilities, tagging as in \"2.0\" and tagclouds."
+  url "http://gorilla-webdesign.be"  
+
+  define_routes do |map|
+    if defined?(SiteLanguage) && SiteLanguageExtension.enabled? && SiteLanguage.count > 0
+      SiteLanguage.codes.each do |code|
+        langname = Locale.new(code).language.code
+        map.connect "#{langname}#{Radiant::Config['tags.results_page_url']}/:tag", :controller => 'site', :action => 'show_page', :url => Radiant::Config['tags.results_page_url'], :language => code
+      end
+    else
+      map.connect "#{Radiant::Config['tags.results_page_url']}/:tag", :controller => 'site', :action => 'show_page', :url => Radiant::Config['tags.results_page_url']
+    end
+  end
   
   def activate
     raise "The Shards extension is required and must be loaded first!" unless defined?(Shards)
-    Radiant::Config['tag.results_page_url'] = '/search/by-tag'
+    Radiant::Config['tags.results_page_url'] = '/search/by-tag' unless Radiant::Config['tags.results_page_url']
     TagSearchPage
     Page.send :include, RadiusTags
     require 'tagging_methods'
@@ -21,15 +32,5 @@ class TagsExtension < Radiant::Extension
   end
   
   def deactivate
-    admin.tabs.remove "Tags"
-  end
-  
-  def load_config
-    filename = File.join(TagsExtension.root, 'config', 'tags.yml')
-    raise TagsExtensionError.new("TagsExtension error: configuration file does not exist, see the README") unless File.exists?(filename)
-    configurations = YAML::load_file(filename)
-    configurations.each do |key, value|
-      Radiant::Config["#{key}"] = value
-    end
   end
 end

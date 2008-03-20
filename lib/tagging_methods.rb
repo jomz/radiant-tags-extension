@@ -15,13 +15,57 @@ class ActiveRecord::Base
         raise unless e.to_s =~ /duplicate/i
       end
     end
-    
   end
+  
+  alias :meta_tags= :tag_with
 
   def tag_list
     meta_tags.map(&:name).join(' ')
   end
-  
-  alias :meta_tags= :tag_with
+
+   # 
+   # Find all the objects tagged with the supplied list of tags
+   # 
+   # Usage : Model.tagged_with("ruby")
+   #         Model.tagged_with("hello", "world")
+   #         Model.tagged_with("hello", "world", :limit => 10)
+   #
+   def self.tagged_with(*tag_list)
+     options = tag_list.last.is_a?(Hash) ? tag_list.pop : {}
+     tag_list = parse_tags(tag_list)
+   
+     scope = scope(:find)
+     options[:select] ||= "#{table_name}.*"
+     options[:from] ||= "#{table_name}, meta_tags, taggings"
+   
+     sql  = "SELECT #{(scope && scope[:select]) || options[:select]} "
+     sql << "FROM #{(scope && scope[:from]) || options[:from]} "
+
+     add_joins!(sql, options, scope)
+   
+     sql << "WHERE #{table_name}.#{primary_key} = taggings.taggable_id "
+     sql << "AND taggings.taggable_type = '#{ActiveRecord::Base.send(:class_name_of_active_record_descendant, self).to_s}' "
+     sql << "AND taggings.meta_tag_id = meta_tags.id "
+   
+     tag_list_condition = tag_list.map {|t| "'#{t}'"}.join(", ")
+   
+     sql << "AND (meta_tags.name IN (#{sanitize_sql(tag_list_condition)})) "
+     sql << "AND #{sanitize_sql(options[:conditions])} " if options[:conditions]
+     sql << "GROUP BY #{table_name}.id "
+     sql << "HAVING COUNT(taggings.meta_tag_id) = #{tag_list.size}"
+   
+     add_order!(sql, options[:order], scope)
+     add_limit!(sql, options, scope)
+     add_lock!(sql, options, scope)
+   
+     find_by_sql(sql)
+   end
+ 
+   def self.parse_tags(tags)
+     return [] if tags.blank?
+     tags = Array(tags).first
+     tags = tags.respond_to?(:flatten) ? tags.flatten : tags.split(MetaTag::DELIMITER)
+     tags.map { |tag| tag.strip.squeeze(" ") }.flatten.compact.map(&:downcase).uniq
+   end
 
 end

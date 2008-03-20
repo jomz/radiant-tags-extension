@@ -1,10 +1,10 @@
-== Tags extension
+= Tags extension
 
 Created by: Benny Degezelle - gorilla-webdesign.be
-Version: 0.1.0
+Version: 0.1.1
 Contact: benny AT gorilla-webdesign DOT be
 
-This extension enhances the page model with tagging capabilities. Tagging as in "2.0" and tagclouds. You could change it to also tag other models.
+This extension enhances the page model with tagging capabilities, tagging as in "2.0" and tagclouds.
 
 
 == Requirements
@@ -23,8 +23,8 @@ Get it from svn://rubyforge.org/var/svn/fauna/has_many_polymorphs/trunk
 	Which will copy tags.css to your stylesheets folder. You might want to edit this file.
 4. Add the tags.css to your layout;
     <link rel="stylesheet" type="text/css" href="/stylesheets/tags.css" />
-5. Make a page to sit in /search/by-tag, and give it the "Tag Search" pagetype. 
-	If you want to change this location, you can do so in config/tags.yml. 
+5. Make a page to sit in /search/by-tag, and give it the "Tag Search" pagetype.
+	If you want to change this location, it's in Radiant::Config['tags.results_page_url'].
 	Copy the results page example below, and modify to your likings;
 
 
@@ -35,7 +35,7 @@ Get it from svn://rubyforge.org/var/svn/fauna/has_many_polymorphs/trunk
 </r:search:empty>
 
 <r:search:results>
-  <h2>Found the following pages that are tagged with <em>"<r:search:query/>"</em>.</h2>
+  <h2>Found the following pages that are tagged with "<em><r:search:query/></em>".</h2>
 
   <ul>
   <r:search:results:each>
@@ -53,5 +53,17 @@ I made a stab at building the 'perfect' tag cloud markup, as inspired by a post 
 
 == Tag list
 
-Use <r:tag_list /> to get a list of linked-up tags for the current page. 
+Use <r:tag_list /> to get a list of tags for the current page. 
 Also works through children:each.
+
+== Collections
+
+You can grab a collection of pages with a certain tag like so;
+
+<r:tagged with="sometag" [scope="/some/page"]>
+  <r:link />
+</r:tagged>
+
+Which would iterate over all the resulting pages, like you do with children:each.
+When you define scope, only this page and any of it's (grand)children will be used.
+You can also set limit, offset etc like with children:each.

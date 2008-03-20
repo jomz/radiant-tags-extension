@@ -55,9 +55,10 @@ class TagSearchPage < Page
   
   def render
     @query_result = []
-    tag = @request.parameters[:q]
+    tag = @request.parameters[:tag]
+    self.title = "Tagged with #{tag}"
     unless (@query = tag).blank?
-      pages = MetaTag.find_by_name(tag).pages
+      pages = Page.tagged_with(tag)
       @query_result = pages.delete_if { |p| !p.published? }
     end
     lazy_initialize_parser_and_context
