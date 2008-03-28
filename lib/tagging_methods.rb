@@ -1,4 +1,4 @@
-class ActiveRecord::Base
+TaggingMethods = Proc.new do
   
   def tag_with tags
     self.save if self.new_record?
@@ -6,7 +6,7 @@ class ActiveRecord::Base
     return if tags == tag_list
     # do we need to delete any tags?
     tags_to_delete = tag_list.split(' ') - tags.split(' ')
-    # tags_to_delete.select{|t| meta_tags.delete(MetaTag.find_by_name(t))}
+    tags_to_delete.select{|t| meta_tags.delete(MetaTag.find_by_name(t))}
     
     tags.split(" ").each do |tag|
       begin

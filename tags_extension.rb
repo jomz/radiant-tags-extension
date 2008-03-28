@@ -1,6 +1,5 @@
 # require_dependency 'application'
 require File.dirname(__FILE__)+'/lib/tagging_methods'
-include Globalize
 
 class TagsExtension < Radiant::Extension
   version "1.1"
@@ -9,6 +8,7 @@ class TagsExtension < Radiant::Extension
 
   define_routes do |map|
     if defined?(SiteLanguage)  && SiteLanguage.count > 0
+      include Globalize
       SiteLanguage.codes.each do |code|
         langname = Locale.new(code).language.code
         map.connect "#{langname}#{Radiant::Config['tags.results_page_url']}/:tag", :controller => 'site', :action => 'show_page', :url => Radiant::Config['tags.results_page_url'], :language => code
@@ -23,12 +23,12 @@ class TagsExtension < Radiant::Extension
     Radiant::Config['tags.results_page_url'] = '/search/by-tag' unless Radiant::Config['tags.results_page_url']
     TagSearchPage
     Page.send :include, RadiusTags
-    require 'tagging_methods'
     begin
       MetaTag
     rescue
       # dirty hack; need to get trough here to allow migrations to run..
     end
+    Page.module_eval &TaggingMethods
     admin.page.edit.add :extended_metadata, 'tag_field'
   end
   
