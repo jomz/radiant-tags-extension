@@ -17,7 +17,7 @@ module RadiusTags
     ttag = tag.attr['with'] || @request.parameters[:tag]
     if tag.attr['scope']
       scope = Page.find_by_url(tag.attr['scope'])
-      raise TagError, "The scope attribute must be a valid url to an existing page." if scope.class_name.eql?('FileNotFoundPage')
+      return "The scope attribute must be a valid url to an existing page." if scope.class_name.eql?('FileNotFoundPage')
       # show only pages within scope
       Page.tagged_with(ttag, options).each do |page|
         next unless (page.ancestors.include?(scope) or page == scope)
