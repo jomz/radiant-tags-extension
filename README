@@ -1,7 +1,7 @@
 = Tags extension
 
 Created by: Benny Degezelle - gorilla-webdesign.be
-Version: 0.1.1
+Version: 0.1.2
 Contact: benny AT gorilla-webdesign DOT be
 
 This extension enhances the page model with tagging capabilities, tagging as in "2.0" and tagclouds.
@@ -10,9 +10,7 @@ This extension enhances the page model with tagging capabilities, tagging as in 
 == Requirements
 
 This extension depends on the shards extension and the has_many_polymorphs plugin
-Shards should be installed and loaded first; you can change the load order of extensions in config/environment.rb
-The has_many_polymorphs plugin goes into your vendor/plugins folder.
-Get it from svn://rubyforge.org/var/svn/fauna/has_many_polymorphs/trunk
+Shards should be installed and loaded first; you can change the load order of extensions in config/environment.rb (see http://wiki.radiantcms.org/Using_the_Shards_Extension).
 
 
 == Installation
