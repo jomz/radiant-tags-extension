@@ -19,7 +19,7 @@ class TagsExtension < Radiant::Extension
   end
   
   def activate
-    raise "The Shards extension is required and must be loaded first!" unless defined?(Shards)
+    raise "The Shards extension is required and must be loaded first!" unless defined?(admin.page)
     Radiant::Config['tags.results_page_url'] = '/search/by-tag' unless Radiant::Config['tags.results_page_url']
     TagSearchPage
     Page.send :include, RadiusTags
