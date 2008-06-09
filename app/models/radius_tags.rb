@@ -72,7 +72,7 @@ module RadiusTags
   end
 
   def tag_item_url(name)
-    "#{Radiant::Config['tags.results_page_url']}?q=#{name}"
+    "#{Radiant::Config['tags.results_page_url']}?tag=#{name}"
   end
   
   def tagged_with_options(tag)
