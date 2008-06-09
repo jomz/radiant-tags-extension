@@ -2,7 +2,7 @@
 require File.dirname(__FILE__)+'/lib/tagging_methods'
 
 class TagsExtension < Radiant::Extension
-  version "1.2"
+  version "1.3"
   description "This extension enhances the page model with tagging capabilities, tagging as in \"2.0\" and tagclouds."
   url "http://gorilla-webdesign.be"  
 
