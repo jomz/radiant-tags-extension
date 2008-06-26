@@ -60,10 +60,22 @@ module RadiusTags
     tag.expand
   end
   
-  desc "Iterates through each tag"
+  desc %{
+    Iterates through each tag and allows you to specify the order: by popularity or by name.
+    The default is by name. You may also limit the search; the default is 5 results.
+    
+    Usage: <pre><code><r:all_tags:each order="popularity" limit="5">...</r:all_tags:each></code></pre>
+  }
   tag "all_tags:each" do |tag|
+    order = tag.attr['order'] || 'name'
+    limit = tag.attr['limit'] || '5'
     result = []
-    all_tags = MetaTag.find(:all)
+    case order
+    when 'name'
+      all_tags = MetaTag.find(:all, :limit => limit)
+    else
+      all_tags = MetaTag.cloud(:limit => limit)
+    end
     all_tags.each do |t|
       tag.locals.meta_tag = t
       result << tag.expand
