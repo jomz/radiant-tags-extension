@@ -55,6 +55,44 @@ module RadiusTags
     output.join ", "
   end
   
+  desc "Set the scope for all tags in the database"
+  tag "all_tags" do |tag|
+    tag.expand
+  end
+  
+  desc "Iterates through each tag"
+  tag "all_tags:each" do |tag|
+    result = []
+    all_tags = MetaTag.find(:all)
+    all_tags.each do |t|
+      tag.locals.meta_tag = t
+      result << tag.expand
+    end
+    result
+  end
+  
+  desc "Renders the tag's name"
+  tag "all_tags:each:name" do |tag|
+    tag.locals.meta_tag.name
+  end
+  
+  desc "Set the scope for the tag's pages"
+  tag "all_tags:each:pages" do |tag|
+    tag.expand
+  end
+  
+  desc "Iterates through each page"
+  tag "all_tags:each:pages:each" do |tag|
+    result = []
+    tag.locals.meta_tag.taggables.each do |taggable|
+      if taggable.is_a?(Page)
+        tag.locals.page = taggable
+        result << tag.expand
+      end
+    end
+    result
+  end
+  
   private
   
   def build_tag_cloud(tag_cloud, style_list)
