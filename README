@@ -2,7 +2,8 @@
 
 Created by: Keith Bingman - keithbingman.com
 Revived by: Benny Degezelle - gorilla-webdesign.be
-Version: 0.1.3
+New features by: Jim Gay - saturnflyer.com
+Version: 0.2
 Contact: benny AT gorilla-webdesign DOT be
 
 This extension enhances the page model with tagging capabilities, tagging as in "2.0" and tagclouds.
@@ -55,14 +56,23 @@ I made a stab at building the 'perfect' tag cloud markup, as inspired by a post 
 Use <r:tag_list /> to get a list of tags for the current page. 
 Also works through children:each.
 
+== All tags
+
+Use <r:all_tags /> to get a list of all tags. You may iterate through them with
+<r:all_tags:each> and access their associated pages with <r:all_tags:each:pages:each>
+
 == Collections
 
 You can grab a collection of pages with a certain tag like so;
 
-<r:tagged with="sometag" [scope="/some/page"]>
+<r:tagged with="sometag" [scope="/some/page"] [with_any="true"]>
   <r:link />
 </r:tagged>
 
 Which would iterate over all the resulting pages, like you do with children:each.
 When you define scope, only this page and any of it's (grand)children will be used.
 You can also set limit, offset etc like with children:each.
+
+Using r:tagged in it's default setting searches for pages that have all of the given tags.
+Using r:tagged with the attribute 'with_any' set to 'true' will find pages that have any of
+the given tags.
