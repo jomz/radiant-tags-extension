@@ -13,38 +13,25 @@ module RadiusTags
   tag "tagged" do |tag|
     options = tagged_with_options(tag)
     with_any = tag.attr['with_any'] || false
+    scope_attr = tag.attr['scope'] || '/'
     result = []
     raise TagError, "`tagged' tag must contain a `with' attribute." unless (tag.attr['with'] || tag.locals.page.class_name = TagSearchPage)
     ttag = tag.attr['with'] || @request.parameters[:tag]
-    if tag.attr['scope']
-      scope = Page.find_by_url(tag.attr['scope'])
-      return "The scope attribute must be a valid url to an existing page." if scope.class_name.eql?('FileNotFoundPage')
-      # show only pages within scope
-      if with_any
-        Page.tagged_with(ttag, options).each do |page|
+    
+    scope = Page.find_by_url(scope_attr)
+    return "The scope attribute must be a valid url to an existing page." if scope.class_name.eql?('FileNotFoundPage')
+    
+    if with_any
+      Page.tagged_with_any(ttag, options).each do |page|
           next unless (page.ancestors.include?(scope) or page == scope)
           tag.locals.page = page
           result << tag.expand
-        end
-      else
-        Page.tagged_with(ttag, options).each do |page|
-          next unless (page.ancestors.include?(scope) or page == scope)
-          tag.locals.page = page
-          result << tag.expand
-        end
       end
     else
-      # show 'em all
-      if with_any
-        Page.tagged_with_any(ttag, options).each do |page|
+      Page.tagged_with(ttag, options).each do |page|
+          next unless (page.ancestors.include?(scope) or page == scope)
           tag.locals.page = page
           result << tag.expand
-        end
-      else
-        Page.tagged_with(ttag, options).each do |page|
-          tag.locals.page = page
-          result << tag.expand
-        end
       end
     end
     result
