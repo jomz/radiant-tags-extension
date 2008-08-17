@@ -13,7 +13,7 @@ namespace :radiant do
       end
       
       desc "Copy needed files to public dir"
-      task :install => :environment do
+      task :update => :environment do
         is_svn_or_dir = proc {|path| path =~ /\.svn/ || File.directory?(path) }
         Dir[TagsExtension.root + "/public/**/*"].reject(&is_svn_or_dir).each do |file|
           path = file.sub(TagsExtension.root, '')
