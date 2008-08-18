@@ -12,7 +12,9 @@ TaggingMethods = Proc.new do
       begin
         MetaTag.find_or_create_by_name(tag).taggables << self
       rescue ActiveRecord::StatementInvalid => e
-        raise unless e.to_s =~ /duplicate/i
+        # With SQLite3 - a duplicate tagging will result in the following message:
+        # SQLite3::SQLException: SQL logic error or missing database: INSERT INTO taggings ("meta_tag_id", "taggable_type", "taggable_id") VALUES(11, 'Page', 74)
+        # raise unless e.to_s =~ /duplicate/i
       end
     end
   end
