@@ -7,6 +7,7 @@ class TagsExtension < Radiant::Extension
   url "http://gorilla-webdesign.be"  
 
   define_routes do |map|
+    raise "The 'tags.results_page_url' value must be set in Radiant::Config" if Radiant::Config['tags.results_page_url'].nil?
     if defined?(SiteLanguage)  && SiteLanguage.count > 0
       include Globalize
       SiteLanguage.codes.each do |code|
