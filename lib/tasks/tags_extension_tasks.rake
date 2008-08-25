@@ -2,6 +2,9 @@ namespace :radiant do
   namespace :extensions do
     namespace :tags do
       
+      desc "Runs the migration and update tasks of the Tags extension"
+      task :install => [:environment, :migrate, :update]
+      
       desc "Runs the migration of the Tags extension"
       task :migrate => :environment do
         require 'radiant/extension_migrator'
