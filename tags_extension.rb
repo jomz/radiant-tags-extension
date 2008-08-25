@@ -5,9 +5,13 @@ class TagsExtension < Radiant::Extension
   version "1.3"
   description "This extension enhances the page model with tagging capabilities, tagging as in \"2.0\" and tagclouds."
   url "http://gorilla-webdesign.be"  
+  
+  DEFAULT_RESULTS_URL = '/search/by-tag'
 
   define_routes do |map|
-    raise "The 'tags.results_page_url' value must be set in Radiant::Config" if Radiant::Config['tags.results_page_url'].nil?
+    if Radiant::Config['tags.results_page_url'].blank?
+      Radiant::Config['tags.results_page_url'] = TagsExtension::DEFAULT_RESULTS_URL if Radiant::Config['tags.results_page_url'].blank?
+    end
     if defined?(SiteLanguage)  && SiteLanguage.count > 0
       include Globalize
       SiteLanguage.codes.each do |code|
@@ -21,7 +25,7 @@ class TagsExtension < Radiant::Extension
   
   def activate
     raise "The Shards extension is required and must be loaded first!" unless defined?(admin.page)
-    Radiant::Config['tags.results_page_url'] = '/search/by-tag' unless Radiant::Config['tags.results_page_url']
+    Radiant::Config['tags.results_page_url'] = TagsExtension::DEFAULT_RESULTS_URL  unless Radiant::Config['tags.results_page_url']
     TagSearchPage
     Page.send :include, RadiusTags
     begin
