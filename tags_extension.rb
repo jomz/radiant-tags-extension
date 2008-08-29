@@ -35,6 +35,11 @@ class TagsExtension < Radiant::Extension
     end
     Page.module_eval &TaggingMethods
     admin.page.edit.add :extended_metadata, 'tag_field'
+    
+    # HELP
+    if admin.help
+      admin.help.index.add :page_details, 'using_tags', :after => 'breadcrumbs'
+    end
   end
   
   def deactivate
