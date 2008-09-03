@@ -37,7 +37,7 @@ class TagsExtension < Radiant::Extension
     admin.page.edit.add :extended_metadata, 'tag_field'
     
     # HELP
-    if admin.help
+    if admin.respond_to?(:help)
       admin.help.index.add :page_details, 'using_tags', :after => 'breadcrumbs'
     end
   end
