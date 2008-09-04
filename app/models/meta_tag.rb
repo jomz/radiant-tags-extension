@@ -1,6 +1,13 @@
 class MetaTag < ActiveRecord::Base
 
-  DELIMITER = " " # how to separate tags in strings (you may
+  if Radiant::Config['tags.complex_strings'] == 'true'
+    DELIMITER = ";"
+    re_format = /^[a-zA-Z0-9\_\-\s]+$/
+  else
+    DELIMITER = " "
+    re_format = /^[a-zA-Z0-9\_\-]+$/
+  end
+    # how to separate tags in strings (you may
     # also need to change the validates_format_of parameters 
     # if you update this)
 
@@ -8,7 +15,7 @@ class MetaTag < ActiveRecord::Base
   # and rescue the AR index errors instead
   validates_presence_of :name
   validates_uniqueness_of :name, :case_sensitive => false
-  validates_format_of :name, :with => /^[a-zA-Z0-9\_\-]+$/, 
+  validates_format_of :name, :with => re_format, 
     :message => "can not contain special characters"
     
   has_many_polymorphs :taggables, 

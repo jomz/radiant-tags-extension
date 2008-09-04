@@ -5,12 +5,12 @@ TaggingMethods = Proc.new do
     # just skip the whole method if the tags string hasn't changed
     return if tags == tag_list
     # do we need to delete any tags?
-    tags_to_delete = tag_list.split(' ') - tags.split(' ')
+    tags_to_delete = tag_list.split(MetaTag::DELIMITER) - tags.split(MetaTag::DELIMITER)
     tags_to_delete.select{|t| meta_tags.delete(MetaTag.find_by_name(t))}
     
-    tags.split(" ").each do |tag|
+    tags.split(MetaTag::DELIMITER).each do |tag|
       begin
-        MetaTag.find_or_create_by_name(tag).taggables << self
+        MetaTag.find_or_create_by_name(tag.strip.squeeze(" ")).taggables << self
       rescue ActiveRecord::StatementInvalid => e
         # With SQLite3 - a duplicate tagging will result in the following message:
         # SQLite3::SQLException: SQL logic error or missing database: INSERT INTO taggings ("meta_tag_id", "taggable_type", "taggable_id") VALUES(11, 'Page', 74)
@@ -22,7 +22,7 @@ TaggingMethods = Proc.new do
   alias :meta_tags= :tag_with
 
   def tag_list
-    meta_tags.map(&:name).join(' ')
+    meta_tags.map(&:name).join(MetaTag::DELIMITER)
   end
 
    # 
@@ -49,7 +49,7 @@ TaggingMethods = Proc.new do
      sql << "AND taggings.taggable_type = '#{ActiveRecord::Base.send(:class_name_of_active_record_descendant, self).to_s}' "
      sql << "AND taggings.meta_tag_id = meta_tags.id "
    
-     tag_list_condition = tag_list.map {|name| "'#{name}'"}.join(", ")
+     tag_list_condition = tag_list.map {|name| "'#{name.strip.squeeze(' ')}'"}.join(", ")
    
      sql << "AND (meta_tags.name IN (#{sanitize_sql(tag_list_condition)})) "
      sql << "AND #{sanitize_sql(options[:conditions])} " if options[:conditions]
@@ -88,7 +88,7 @@ TaggingMethods = Proc.new do
      sql << "AND ("
      or_options = []
      tag_list.each do |name|
-       or_options << "meta_tags.name in ('#{name}')"
+       or_options << "meta_tags.name in ('#{name.strip.squeeze(' ')}')"
      end
      or_options_joined = or_options.join(" OR ")
      sql << "#{or_options_joined}) "
