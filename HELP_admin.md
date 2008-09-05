@@ -12,8 +12,8 @@ You may set `Radiant::Config['tags.complex_strings'] = true` to allow you to ent
 complex tags for your pages.
 
 When this setting is `true` the tags are delimited by a semi-colon, allowing you to enter 
-a string of tags such as "My Summer Vacation; Entertainment/Nonsense". The result of that string 
-will return 2 tags: `My Summer Vacation` and `Entertainment/Nonsense`
+a string of tags such as "My Summer Vacation (2008); Entertainment/Nonsense". The result of that string 
+will return 2 tags: `My Summer Vacation (2008)` and `Entertainment/Nonsense`
 
 == Making the choice
 
