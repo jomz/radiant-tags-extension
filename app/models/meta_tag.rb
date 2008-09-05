@@ -1,12 +1,13 @@
 class MetaTag < ActiveRecord::Base
 
   if Radiant::Config['tags.complex_strings'] == 'true'
-    DELIMITER = ";"
+    delim = ";"
     re_format = /^[a-zA-Z0-9\_\-\s]+$/
   else
-    DELIMITER = " "
+    delim = " "
     re_format = /^[a-zA-Z0-9\_\-]+$/
   end
+  DELIMITER = delim
     # how to separate tags in strings (you may
     # also need to change the validates_format_of parameters 
     # if you update this)
