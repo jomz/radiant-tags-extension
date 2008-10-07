@@ -50,11 +50,25 @@ module RadiusTags
     end
     output += "</ol>"
   end
-  
+ 
+  desc "Render a Tag list"
+  tag "tag_cloud_list" do |tag|
+    tag_cloud = MetaTag.cloud({:limit => 100}).sort
+    output = "<ul class=\"tag_cloud\">"
+    if tag_cloud.length > 0
+        build_tag_cloud(tag_cloud, %w(size1 size2 size3 size4 size5 size6 size7 size8 size9)) do |tag, cloud_class, amount|
+                output += "<li class=\"#{cloud_class}\"><a href=\"#{tag_item_url(tag)}\" class=\"tag\">#{tag}(#{amount})</a></li>"
+        end
+    else
+        return "<p>No tags found.</p>"
+    end
+    output += "</ul>"
+  end
+ 
   desc "List the current page's tags"
   tag "tag_list" do |tag|
     output = []
-    tag.locals.page.tag_list.split(" ").each {|t| output << "<a href=\"#{tag_item_url(t)}\" class=\"tag\">#{t}</a>"}
+    tag.locals.page.tag_list.split(MetaTag::DELIMITER).each {|t| output << "<a href=\"#{tag_item_url(t)}\" class=\"tag\">#{t}</a>"}
     output.join ", "
   end
   
