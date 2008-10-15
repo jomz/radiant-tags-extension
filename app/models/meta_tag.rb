@@ -2,7 +2,7 @@ class MetaTag < ActiveRecord::Base
 
   if Radiant::Config['tags.complex_strings'] == 'true'
     delim = ";"
-    re_format = /^[a-zA-Z0-9\_\-\s\/()'.]+$/
+    re_format = /^[a-zA-Z0-9\_\-\s\/()'.&]+$/
   else
     delim = " "
     re_format = /^[a-zA-Z0-9\_\-]+$/
