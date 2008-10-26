@@ -42,6 +42,7 @@ You can grab a collection of pages with a certain tag like so;
 
 Which would iterate over all the resulting pages, like you do with children:each.
 When you define scope, only this page and any of it's (grand)children will be used.
+Using scope="current_page" will use the page that is currently being rendered as scope. 
 You can also set limit, offset etc like with children:each.
 
 Using r:tagged in it's default setting searches for pages that have all of the given tags.
