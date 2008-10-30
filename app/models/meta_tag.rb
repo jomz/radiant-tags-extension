@@ -2,7 +2,7 @@ class MetaTag < ActiveRecord::Base
 
   if Radiant::Config['tags.complex_strings'] == 'true'
     delim = ";"
-    re_format = /^[a-zA-Z0-9\_\-\s\/()'.]+$/
+    re_format = /^[a-zA-Z0-9\_\-\s\/()'.&]+$/
   else
     delim = " "
     re_format = /^[a-zA-Z0-9\_\-]+$/
@@ -35,7 +35,7 @@ class MetaTag < ActiveRecord::Base
       :limit => args[:limit] || 5,
       :joins => "JOIN taggings ON taggings.meta_tag_id = meta_tags.id",
       :conditions => args[:conditions],
-      :group => "taggings.meta_tag_id",
+      :group => "meta_tags.id, meta_tags.name",
       :order => "popularity DESC" )
   end
   

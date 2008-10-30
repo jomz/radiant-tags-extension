@@ -1,7 +1,7 @@
 ol.tag_cloud { list-style: none; }
 .tag_cloud li { display: inline; }
 /* hide the extra context from CSS-enabled browsers, but not screenreaders */
-.tag_cloud span { position: absolute; left: -999px; width: 990px; }
+.tag_cloud span { position: absolute; left: 0px; top: -500px; width: 1px; height: 1px; overflow: hidden; }
 
 .tag_cloud .size1 { font-size: 1em; }
 .tag_cloud .size2 { font-size: 1.3em; }
