@@ -25,13 +25,20 @@ module RadiusTags
     find_with_tag_options(tag)
   end
   
-  desc "Render a Tag cloud"
+  desc %{
+    Render a Tag cloud
+    The results_page attribute will default to #{Radiant::Config['tags.results_page_url']}
+    
+    *Usage:*
+    <pre><code><r:tag_cloud_list [results_page="/some/url"] /></code></pre>
+  }
   tag "tag_cloud" do |tag|
     tag_cloud = MetaTag.cloud.sort
+    results_page = tag.attr['results_page'] || Radiant::Config['tags.results_page_url']
     output = "<ol class=\"tag_cloud\">"
     if tag_cloud.length > 0
     	build_tag_cloud(tag_cloud, %w(size1 size2 size3 size4 size5 size6 size7 size8 size9)) do |tag, cloud_class, amount|
-    		output += "<li class=\"#{cloud_class}\"><span>#{pluralize(amount, 'page is', 'pages are')} tagged with </span><a href=\"#{tag_item_url(tag)}\" class=\"tag\">#{tag}</a></li>"
+    		output += "<li class=\"#{cloud_class}\"><span>#{pluralize(amount, 'page is', 'pages are')} tagged with </span><a href=\"#{results_page}?tag=#{tag}\" class=\"tag\">#{tag}</a></li>"
     	end
     else
     	return "<p>No tags found.</p>"
@@ -39,13 +46,20 @@ module RadiusTags
     output += "</ol>"
   end
  
-  desc "Render a Tag list"
+  desc %{
+    Render a Tag list, more for 'categories'-ish usage, i.e.: Cats (2) Logs (1) ...
+    The results_page attribute will default to #{Radiant::Config['tags.results_page_url']}
+    
+    *Usage:*
+    <pre><code><r:tag_cloud_list [results_page="/some/url"] /></code></pre>
+  }
   tag "tag_cloud_list" do |tag|
     tag_cloud = MetaTag.cloud({:limit => 100}).sort
-    output = "<ul class=\"tag_cloud\">"
+    results_page = tag.attr['results_page'] || Radiant::Config['tags.results_page_url']
+    output = "<ul class=\"tag_list\">"
     if tag_cloud.length > 0
         build_tag_cloud(tag_cloud, %w(size1 size2 size3 size4 size5 size6 size7 size8 size9)) do |tag, cloud_class, amount|
-                output += "<li class=\"#{cloud_class}\"><a href=\"#{tag_item_url(tag)}\" class=\"tag\">#{tag}(#{amount})</a></li>"
+          output += "<li class=\"#{cloud_class}\"><a href=\"#{results_page}?tag=#{tag}\" class=\"tag\">#{tag} (#{amount})</a></li>"
         end
     else
         return "<p>No tags found.</p>"
