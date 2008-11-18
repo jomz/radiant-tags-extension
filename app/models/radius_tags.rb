@@ -30,10 +30,12 @@ module RadiusTags
     The results_page attribute will default to #{Radiant::Config['tags.results_page_url']}
     
     *Usage:*
-    <pre><code><r:tag_cloud_list [results_page="/some/url"] /></code></pre>
+    <pre><code><r:tag_cloud_list [results_page="/some/url"] [scope="/some/url"]/></code></pre>
   }
   tag "tag_cloud" do |tag|
     tag_cloud = MetaTag.cloud.sort
+    tag_cloud = filter_tags_to_url_scope(tag_cloud, tag.attr['scope']) unless tag.attr['scope'].nil?
+    
     results_page = tag.attr['results_page'] || Radiant::Config['tags.results_page_url']
     output = "<ol class=\"tag_cloud\">"
     if tag_cloud.length > 0
@@ -51,10 +53,12 @@ module RadiusTags
     The results_page attribute will default to #{Radiant::Config['tags.results_page_url']}
     
     *Usage:*
-    <pre><code><r:tag_cloud_list [results_page="/some/url"] /></code></pre>
+    <pre><code><r:tag_cloud_list [results_page="/some/url"] [scope="/some/url"]/></code></pre>
   }
   tag "tag_cloud_list" do |tag|
     tag_cloud = MetaTag.cloud({:limit => 100}).sort
+    tag_cloud = filter_tags_to_url_scope(tag_cloud, tag.attr['scope']) unless tag.attr['scope'].nil?
+    
     results_page = tag.attr['results_page'] || Radiant::Config['tags.results_page_url']
     output = "<ul class=\"tag_list\">"
     if tag_cloud.length > 0
@@ -214,5 +218,16 @@ module RadiusTags
     end
     options
   end
-  
+
+  def filter_tags_to_url_scope(tags, scope)
+    new_tags = []
+    tags.each do |t|
+      catch :record_found do # using fancy ballsports stuff to avoid unnecessary db calls (by calling each page, ànd by calling page.url)
+        t.pages.each do |p|
+          (new_tags << t; throw :record_found) if p.url.include?(scope)
+        end
+      end
+    end
+    new_tags
+  end
 end
