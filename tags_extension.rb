@@ -12,21 +12,27 @@ class TagsExtension < Radiant::Extension
     if Radiant::Config['tags.results_page_url'].blank?
       Radiant::Config['tags.results_page_url'] = TagsExtension::DEFAULT_RESULTS_URL if Radiant::Config['tags.results_page_url'].blank?
     end
-    if defined?(SiteLanguage)  && SiteLanguage.count > 0
-      include Globalize
-      SiteLanguage.codes.each do |code|
-        langname = Locale.new(code).language.code
-        map.connect "#{langname}#{Radiant::Config['tags.results_page_url']}/:tag", :controller => 'site', :action => 'show_page', :url => Radiant::Config['tags.results_page_url'], :language => code
+    begin
+      if defined?(SiteLanguage) && SiteLanguage.count > 0
+        include Globalize
+        SiteLanguage.codes.each do |code|
+          langname = Locale.new(code).language.code
+          map.connect "#{langname}#{Radiant::Config['tags.results_page_url']}/:tag", :controller => 'site', :action => 'show_page', :url => Radiant::Config['tags.results_page_url'], :language => code
+        end
+      else
+        map.connect "#{Radiant::Config['tags.results_page_url']}/:tag", :controller => 'site', :action => 'show_page', :url => Radiant::Config['tags.results_page_url']
       end
-    else
-      map.connect "#{Radiant::Config['tags.results_page_url']}/:tag", :controller => 'site', :action => 'show_page', :url => Radiant::Config['tags.results_page_url']
-    end
+    rescue
+      # dirty hack; need to get trough here to allow migrations to run..
+    end  
   end
   
   def activate
     raise "The Shards extension is required and must be loaded first!" unless defined?(admin.page)
-    Radiant::Config['tags.results_page_url'] = TagsExtension::DEFAULT_RESULTS_URL  unless Radiant::Config['tags.results_page_url']
-    Radiant::Config['tags.complex_strings'] = 'false' unless Radiant::Config['tags.complex_strings']
+    if Radiant::Config.table_exists?
+      Radiant::Config['tags.results_page_url'] = TagsExtension::DEFAULT_RESULTS_URL unless Radiant::Config['tags.results_page_url']
+      Radiant::Config['tags.complex_strings'] = 'false' unless Radiant::Config['tags.complex_strings']
+    end
     TagSearchPage
     Page.send :include, RadiusTags
     begin

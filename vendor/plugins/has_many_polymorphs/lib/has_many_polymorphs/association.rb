@@ -22,7 +22,11 @@ module ActiveRecord #:nodoc:
         @reflection.klass.transaction do
           flatten_deeper(records).each do |record|
             if @owner.new_record? or not record.respond_to?(:new_record?) or record.new_record?
-              raise PolymorphicError, "You can't associate unsaved records."            
+              unless @owner.valid?
+                raise PolymorphicError, "Invalid tag: #{@owner.name} - #{@owner.errors.full_messages}"
+              else
+                raise PolymorphicError, "You can't associate unsaved records."
+              end
             end
             next if @reflection.options[:skip_duplicates] and @target.include? record
             @owner.send(@reflection.through_reflection.name).proxy_target << @reflection.klass.create!(construct_join_attributes(record))
