@@ -145,7 +145,7 @@ module RadiusTags
   end
 
   def tag_item_url(name)
-    "#{Radiant::Config['tags.results_page_url']}?tag=#{name}"
+    "#{Radiant::Config['tags.results_page_url']}/#{name}"
   end
   
   def find_with_tag_options(tag)
