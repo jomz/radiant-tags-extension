@@ -50,7 +50,7 @@ class TagSearchPage < Page
   
   #### "Behavior" methods ####
   def cache?
-    false
+    true
   end
   
   def render

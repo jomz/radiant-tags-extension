@@ -2,7 +2,7 @@
 require File.dirname(__FILE__)+'/lib/tagging_methods'
 
 class TagsExtension < Radiant::Extension
-  version "1.3"
+  version "1.4"
   description "This extension enhances the page model with tagging capabilities, tagging as in \"2.0\" and tagclouds."
   url "http://gorilla-webdesign.be"  
   
@@ -41,6 +41,7 @@ class TagsExtension < Radiant::Extension
       # dirty hack; need to get trough here to allow migrations to run..
     end
     Page.module_eval &TaggingMethods
+    SiteController.send :include, SiteControllerExtensions
     admin.page.edit.add :extended_metadata, 'tag_field'
     
     # HELP
