@@ -40,7 +40,7 @@ module RadiusTags
     output = "<ol class=\"tag_cloud\">"
     if tag_cloud.length > 0
     	build_tag_cloud(tag_cloud, %w(size1 size2 size3 size4 size5 size6 size7 size8 size9)) do |tag, cloud_class, amount|
-    		output += "<li class=\"#{cloud_class}\"><span>#{pluralize(amount, 'page is', 'pages are')} tagged with </span><a href=\"#{results_page}?tag=#{tag}\" class=\"tag\">#{tag}</a></li>"
+    		output += "<li class=\"#{cloud_class}\"><span>#{pluralize(amount, 'page is', 'pages are')} tagged with </span><a href=\"#{results_page}/#{tag}\" class=\"tag\">#{tag}</a></li>"
     	end
     else
     	return "<p>No tags found.</p>"
