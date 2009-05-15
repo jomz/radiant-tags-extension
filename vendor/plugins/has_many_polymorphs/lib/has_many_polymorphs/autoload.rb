@@ -1,6 +1,5 @@
-
 require 'initializer' unless defined? ::Rails::Initializer 
-require 'dispatcher' unless defined? ::ActionController::Dispatcher
+require 'action_controller/dispatcher' unless defined? ::ActionController::Dispatcher
 
 module HasManyPolymorphs
 
@@ -37,7 +36,7 @@ Note that you can override DEFAULT_OPTIONS via Rails::Configuration#has_many_pol
       require requirement
     end
   
-    Dir[options[:file_pattern]].each do |filename|
+    Dir.glob(options[:file_pattern]).each do |filename|
       next if filename =~ /#{options[:file_exclusions].join("|")}/
       open filename do |file|
         if file.grep(/#{options[:methods].join("|")}/).any?
@@ -64,7 +63,7 @@ class Rails::Initializer #:nodoc:
   alias_method_chain :after_initialize, :autoload 
 end
 
-Dispatcher.to_prepare(:has_many_polymorphs_autoload) do
+ActionController::Dispatcher.to_prepare(:has_many_polymorphs_autoload) do
   # Make sure it gets loaded in the app
   HasManyPolymorphs.autoload
 end

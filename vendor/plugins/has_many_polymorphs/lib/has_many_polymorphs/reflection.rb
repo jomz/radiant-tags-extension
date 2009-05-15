@@ -8,11 +8,8 @@ module ActiveRecord #:nodoc:
       def create_reflection(macro, name, options, active_record)
         case macro
           when :has_many, :belongs_to, :has_one, :has_and_belongs_to_many
-          reflection = AssociationReflection.new(macro, name, options, active_record)
-          #the following lines are only compatible with rails 2.2
-          #klass = options[:through] ? ThroughReflection :
-          AssociationReflection
-          #reflection = klass.new(macro, name, options, active_record)
+            klass = options[:through] ? ThroughReflection : AssociationReflection
+            reflection = klass.new(macro, name, options, active_record)
           when :composed_of
             reflection = AggregateReflection.new(macro, name, options, active_record)
           # added by has_many_polymorphs #
@@ -36,7 +33,7 @@ Inherits from ActiveRecord::Reflection::AssociationReflection.
 
 =end
 
-    class PolymorphicReflection < AssociationReflection
+    class PolymorphicReflection < ThroughReflection
       # Stub out the validity check. Has_many_polymorphs checks validity on macro creation, not on reflection.
       def check_validity! 
         # nothing
