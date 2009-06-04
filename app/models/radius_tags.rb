@@ -33,7 +33,7 @@ module RadiusTags
     <pre><code><r:tag_cloud_list [limit="number"] [results_page="/some/url"] [scope="/some/url"]/></code></pre>
   }
   tag "tag_cloud" do |tag|
-    tag_cloud = MetaTag.cloud(:limit => tag.attr[:limit].to_i || 5).sort
+    tag_cloud = MetaTag.cloud(:limit => tag.attr['limit'].to_i || 5).sort
     tag_cloud = filter_tags_to_url_scope(tag_cloud, tag.attr['scope']) unless tag.attr['scope'].nil?
     
     results_page = tag.attr['results_page'] || Radiant::Config['tags.results_page_url']
