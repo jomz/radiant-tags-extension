@@ -1,0 +1,6 @@
+%tr
+  %th.label
+    %label{:for => "page_meta_tags"}
+      Tags
+  %td.field
+    = f.text_field :meta_tags, :value => @page.tag_list, :class => 'textbox', :maxlength => 160
