@@ -9,7 +9,8 @@ module RadiusTags
     The <pre><r:unless_tagged with="" /></pre> is also available.
   }
   tag "if_tagged" do |tag|
-    tag.expand unless find_with_tag_options(tag).empty?
+    tag.locals.tagged_results = find_with_tag_options(tag)
+    tag.expand unless tag.locals.tagged_results.empty?
   end
   tag "unless_tagged" do |tag|
     tag.expand if find_with_tag_options(tag).empty?
@@ -22,7 +23,17 @@ module RadiusTags
     <pre><code><r:tagged with="shoes diesel" [scope="/fashion/cult-update"] [with_any="true"] [offset="number"] [limit="number"] [by="attribute"] [order="asc|desc"]>...</r:tagged></code></pre>
   }
   tag "tagged" do |tag|
-    find_with_tag_options(tag)
+    unless tag.locals.tagged_results.nil? # We're inside an r:if_tagged, so results are already available;
+      results = tag.locals.tagged_results
+    else
+      results = find_with_tag_options(tag)
+    end
+    output = []
+    results.each do |page|
+      tag.locals.page = page
+      output << tag.expand
+    end
+    output
   end
   
   desc %{
@@ -159,7 +170,7 @@ module RadiusTags
     options = tagged_with_options(tag)
     with_any = tag.attr['with_any'] || false
     scope_attr = tag.attr['scope'] || '/'
-    result = []
+    results = []
     raise TagError, "`tagged' tag must contain a `with' attribute." unless (tag.attr['with'] || tag.locals.page.class_name = TagSearchPage)
     ttag = tag.attr['with'] || @request.parameters[:tag]
     
@@ -169,17 +180,15 @@ module RadiusTags
     if with_any
       Page.tagged_with_any(ttag, options).each do |page|
           next unless (page.ancestors.include?(scope) or page == scope)
-          tag.locals.page = page
-          result << tag.expand
+          results << page
       end
     else
       Page.tagged_with(ttag, options).each do |page|
           next unless (page.ancestors.include?(scope) or page == scope)
-          tag.locals.page = page
-          result << tag.expand
+          results << page
       end
     end
-    result
+    results
   end
   
   def tagged_with_options(tag)
