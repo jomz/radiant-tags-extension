@@ -26,4 +26,5 @@ after creating your tags.
 == Tag Clouds
 
 Some styles are provided in tags.css for the <r:tag_cloud>. To use it, add this to your layout:
-    <link rel="stylesheet" type="text/css" href="/stylesheets/tags.css" />
+  
+  <link rel="stylesheet" type="text/css" href="/stylesheets/tags.css" />

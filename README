@@ -3,15 +3,15 @@
 Created by: Keith Bingman - keithbingman.com
 Revived by: Benny Degezelle - gorilla-webdesign.be
 New features by: Jim Gay - saturnflyer.com
-Version: 0.2
-Contact: benny AT gorilla-webdesign DOT be
+Version: 1.4
 
 This extension enhances the page model with tagging capabilities, tagging as in "2.0" and tagclouds.
 
 == Requirements
 
-This extension depends on the shards extension and the has_many_polymorphs plugin (included in the extension)
-Shards should be installed and loaded first; you can change the load order of extensions in config/environment.rb (see http://wiki.radiantcms.org/Using_the_Shards_Extension).
+This extension depends on the has_many_polymorphs plugin (included in vendor/plugins)
+If you're still on Radiant pre-0.6.7, then the shards_extension should be installed and loaded first.
+You can change the load order of extensions in config/environment.rb (see http://wiki.radiantcms.org/Using_the_Shards_Extension).
 
 == Installation
 
@@ -19,3 +19,20 @@ Shards should be installed and loaded first; you can change the load order of ex
 2. Run 'rake radiant:extensions:tags:install'
 3. Make a page to sit in /search/by-tag, and give it the "Tag Search" pagetype.
 	If you want to change this location, it's in Radiant::Config['tags.results_page_url'].
+
+Done!
+Here's a sample results page to get you started;
+	
+	<r:search:empty>
+	  <h2>I couldn't find anything tagged with "<r:search:query/>".</h2>
+	</r:search:empty>
+
+	<r:search:results>
+	  <h2>Found the following pages that are tagged with "<em><r:search:query/></em>".</h2>
+
+	  <ul>
+	  <r:search:results:each>
+	    <li><r:link/> - <r:author/> - <r:date/></li>
+	  </r:search:results:each>
+	  </ul>
+	</r:search:results>

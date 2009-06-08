@@ -5,45 +5,42 @@ module RadiusTags
   class TagError < StandardError; end
   
   desc %{
+    Expands if a <pre><r:tagged with="" /></pre> call would return items. Takes the same options as the 'tagged' tag.
+    The <pre><r:unless_tagged with="" /></pre> is also available.
+  }
+  tag "if_tagged" do |tag|
+    tag.expand unless find_with_tag_options(tag).empty?
+  end
+  tag "unless_tagged" do |tag|
+    tag.expand if find_with_tag_options(tag).empty?
+  end
+  
+  desc %{
     Find all pages with certain tags, within in an optional scope. Additionally, you may set with_any to true to select pages that have any of the listed tags (opposed to all listed tags which is the provided default).
     
     *Usage:*
     <pre><code><r:tagged with="shoes diesel" [scope="/fashion/cult-update"] [with_any="true"] [offset="number"] [limit="number"] [by="attribute"] [order="asc|desc"]>...</r:tagged></code></pre>
   }
   tag "tagged" do |tag|
-    options = tagged_with_options(tag)
-    with_any = tag.attr['with_any'] || false
-    scope_attr = tag.attr['scope'] || '/'
-    result = []
-    raise TagError, "`tagged' tag must contain a `with' attribute." unless (tag.attr['with'] || tag.locals.page.class_name = TagSearchPage)
-    ttag = tag.attr['with'] || @request.parameters[:tag]
-    
-    scope = scope_attr == 'current_page' ? tag.locals.page : Page.find_by_url(scope_attr)
-    return "The scope attribute must be a valid url to an existing page." if scope.class_name.eql?('FileNotFoundPage')
-    
-    if with_any
-      Page.tagged_with_any(ttag, options).each do |page|
-          next unless (page.ancestors.include?(scope) or page == scope)
-          tag.locals.page = page
-          result << tag.expand
-      end
-    else
-      Page.tagged_with(ttag, options).each do |page|
-          next unless (page.ancestors.include?(scope) or page == scope)
-          tag.locals.page = page
-          result << tag.expand
-      end
-    end
-    result
+    find_with_tag_options(tag)
   end
   
-  desc "Render a Tag cloud"
+  desc %{
+    Render a Tag cloud
+    The results_page attribute will default to #{Radiant::Config['tags.results_page_url']}
+    
+    *Usage:*
+    <pre><code><r:tag_cloud_list [results_page="/some/url"] [scope="/some/url"]/></code></pre>
+  }
   tag "tag_cloud" do |tag|
     tag_cloud = MetaTag.cloud.sort
+    tag_cloud = filter_tags_to_url_scope(tag_cloud, tag.attr['scope']) unless tag.attr['scope'].nil?
+    
+    results_page = tag.attr['results_page'] || Radiant::Config['tags.results_page_url']
     output = "<ol class=\"tag_cloud\">"
     if tag_cloud.length > 0
     	build_tag_cloud(tag_cloud, %w(size1 size2 size3 size4 size5 size6 size7 size8 size9)) do |tag, cloud_class, amount|
-    		output += "<li class=\"#{cloud_class}\"><span>#{pluralize(amount, 'page is', 'pages are')} tagged with </span><a href=\"#{tag_item_url(tag)}\" class=\"tag\">#{tag}</a></li>"
+    		output += "<li class=\"#{cloud_class}\"><span>#{pluralize(amount, 'page is', 'pages are')} tagged with </span><a href=\"#{results_page}/#{tag}\" class=\"tag\">#{tag}</a></li>"
     	end
     else
     	return "<p>No tags found.</p>"
@@ -51,13 +48,22 @@ module RadiusTags
     output += "</ol>"
   end
  
-  desc "Render a Tag list"
+  desc %{
+    Render a Tag list, more for 'categories'-ish usage, i.e.: Cats (2) Logs (1) ...
+    The results_page attribute will default to #{Radiant::Config['tags.results_page_url']}
+    
+    *Usage:*
+    <pre><code><r:tag_cloud_list [results_page="/some/url"] [scope="/some/url"]/></code></pre>
+  }
   tag "tag_cloud_list" do |tag|
     tag_cloud = MetaTag.cloud({:limit => 100}).sort
-    output = "<ul class=\"tag_cloud\">"
+    tag_cloud = filter_tags_to_url_scope(tag_cloud, tag.attr['scope']) unless tag.attr['scope'].nil?
+    
+    results_page = tag.attr['results_page'] || Radiant::Config['tags.results_page_url']
+    output = "<ul class=\"tag_list\">"
     if tag_cloud.length > 0
         build_tag_cloud(tag_cloud, %w(size1 size2 size3 size4 size5 size6 size7 size8 size9)) do |tag, cloud_class, amount|
-                output += "<li class=\"#{cloud_class}\"><a href=\"#{tag_item_url(tag)}\" class=\"tag\">#{tag}(#{amount})</a></li>"
+          output += "<li class=\"#{cloud_class}\"><a href=\"#{results_page}?tag=#{tag}\" class=\"tag\">#{tag} (#{amount})</a></li>"
         end
     else
         return "<p>No tags found.</p>"
@@ -146,7 +152,34 @@ module RadiusTags
   end
 
   def tag_item_url(name)
-    "#{Radiant::Config['tags.results_page_url']}?tag=#{name}"
+    "#{Radiant::Config['tags.results_page_url']}/#{name}"
+  end
+  
+  def find_with_tag_options(tag)
+    options = tagged_with_options(tag)
+    with_any = tag.attr['with_any'] || false
+    scope_attr = tag.attr['scope'] || '/'
+    result = []
+    raise TagError, "`tagged' tag must contain a `with' attribute." unless (tag.attr['with'] || tag.locals.page.class_name = TagSearchPage)
+    ttag = tag.attr['with'] || @request.parameters[:tag]
+    
+    scope = scope_attr == 'current_page' ? Page.find_by_url(@request.request_uri) : Page.find_by_url(scope_attr)
+    return "The scope attribute must be a valid url to an existing page." if scope.class_name.eql?('FileNotFoundPage')
+    
+    if with_any
+      Page.tagged_with_any(ttag, options).each do |page|
+          next unless (page.ancestors.include?(scope) or page == scope)
+          tag.locals.page = page
+          result << tag.expand
+      end
+    else
+      Page.tagged_with(ttag, options).each do |page|
+          next unless (page.ancestors.include?(scope) or page == scope)
+          tag.locals.page = page
+          result << tag.expand
+      end
+    end
+    result
   end
   
   def tagged_with_options(tag)
@@ -192,5 +225,20 @@ module RadiusTags
     end
     options
   end
+<<<<<<< HEAD:app/models/radius_tags.rb
   
+=======
+
+  def filter_tags_to_url_scope(tags, scope)
+    new_tags = []
+    tags.each do |t|
+      catch :record_found do # using fancy ballsports stuff to avoid unnecessary db calls (by calling each page, ànd by calling page.url)
+        t.pages.each do |p|
+          (new_tags << t; throw :record_found) if p.url.include?(scope)
+        end
+      end
+    end
+    new_tags
+  end
+>>>>>>> 7e635af69729197d9cce7a1b74c62332a8321913:app/models/radius_tags.rb
 end

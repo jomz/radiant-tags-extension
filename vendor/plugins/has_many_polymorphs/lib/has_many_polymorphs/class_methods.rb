@@ -340,11 +340,7 @@ Be aware, however, that <tt>NULL != 'Spot'</tt> returns <tt>false</tt> due to SQ
         options[:parent_extend] = spiked_create_extension_module(association_id, Array(options[:parent_extend]), "Parent") 
         
         # create the reflection object      
-        returning(create_reflection(:has_many_polymorphs, association_id, options, self)) do |reflection|
-          if defined? Dependencies and defined? RAILS_ENV and RAILS_ENV == "development"                    
-            inject_dependencies(association_id, reflection) if Dependencies.mechanism == :load
-          end
-          
+        returning(create_reflection(:has_many_polymorphs, association_id, options, self)) do |reflection|          
           # set up the other related associations      
           create_join_association(association_id, reflection)
           create_has_many_through_associations_for_parent_to_children(association_id, reflection)
@@ -364,10 +360,14 @@ Be aware, however, that <tt>NULL != 'Spot'</tt> returns <tt>false</tt> due to SQ
             begin
               table = plural._as_class.table_name
             rescue NameError => e
-              raise PolymorphicError, "Could not find a valid class for #{plural.inspect}. If it's namespaced, be sure to specify it as :\"module/#{plural}\" instead."
+              raise PolymorphicError, "Could not find a valid class for #{plural.inspect} (tried #{plural.to_s._classify}). If it's namespaced, be sure to specify it as :\"module/#{plural}\" instead."
             end
-            plural._as_class.columns.map(&:name).each_with_index do |field, f_index|
-              aliases["#{table}.#{field}"] = "t#{t_index}_r#{f_index}"
+            begin
+              plural._as_class.columns.map(&:name).each_with_index do |field, f_index|
+                aliases["#{table}.#{field}"] = "t#{t_index}_r#{f_index}"
+              end
+            rescue ActiveRecord::StatementInvalid => e
+              _logger_warn "Looks like your table doesn't exist for #{plural.to_s._classify}.\nError #{e}\nSkipping..."
             end
           end
         end
@@ -381,16 +381,7 @@ Be aware, however, that <tt>NULL != 'Spot'</tt> returns <tt>false</tt> due to SQ
           "#{table} AS #{_alias}"
         end.sort).join(", ")
       end
-  
-      # model caching         
-      def inject_dependencies(association_id, reflection)
-        _logger_debug "injecting dependencies"
-        requirements = [self, reflection.klass].map{|klass| [klass, klass.base_class]}.flatten.uniq
-        (all_classes_for(association_id, reflection) - requirements).each do |target_klass|
-          Dependencies.inject_dependency(target_klass, *requirements)        
-        end
-      end
-     
+       
       # method sub-builders
    
       def create_join_association(association_id, reflection)
@@ -407,7 +398,7 @@ Be aware, however, that <tt>NULL != 'Spot'</tt> returns <tt>false</tt> due to SQ
           }
           
         if reflection.options[:foreign_type_key]         
-          type_check = "#{reflection.options[:foreign_type_key]} = #{quote_value(self.base_class.name)}"
+          type_check = "#{reflection.options[:join_class_name].constantize.quoted_table_name}.#{reflection.options[:foreign_type_key]} = #{quote_value(self.base_class.name)}"
           conjunction = options[:conditions] ? " AND " : nil
           options[:conditions] = "#{options[:conditions]}#{conjunction}#{type_check}"
           options[:as] = reflection.options[:as]

@@ -113,7 +113,7 @@ TaggingMethods = Proc.new do
      return [] if tags.blank?
      tags = Array(tags).first
      tags = tags.respond_to?(:flatten) ? tags.flatten : tags.split(MetaTag::DELIMITER)
-     tags.map { |tag| tag.strip.squeeze(" ") }.flatten.compact.map(&:downcase).uniq
+     tags.map { |tag| tag.strip.squeeze(" ") }.flatten.compact.uniq
    end
 
 end
