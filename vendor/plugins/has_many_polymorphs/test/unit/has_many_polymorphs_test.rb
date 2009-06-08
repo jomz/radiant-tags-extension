@@ -10,7 +10,7 @@ require 'aquatic/fish'
 require 'aquatic/pupils_whale'
 require 'beautiful_fight_relationship' 
 
-class PolymorphTest < ActiveSupport::TestCase
+class PolymorphTest < Test::Unit::TestCase
   
   set_fixture_class :bow_wows => Dog
   set_fixture_class :keep_your_enemies_close => BeautifulFightRelationship
@@ -76,7 +76,7 @@ class PolymorphTest < ActiveSupport::TestCase
   def test_duplicate_assignment
     # try to add a duplicate item when :ignore_duplicates is false
     @kibbles.eaters.push(@alice)
-    assert @kibbles.eaters.any? {|obj| obj == @alice}
+    assert @kibbles.eaters.include?(@alice)
     @kibbles.eaters.push(@alice)
     assert_equal @kibbles_eaters_count + 2, @kibbles.eaters.count
     assert_equal @join_count + 2, EatersFoodstuff.count
@@ -114,7 +114,7 @@ class PolymorphTest < ActiveSupport::TestCase
 
     # reload; is the new association there?
     assert @bits.eaters.reload
-    assert @bits.eaters.any? {|obj| obj == @chloe}
+    assert @bits.eaters.include?(@chloe)
   end
 
   def test_build_join_record_on_association
@@ -126,7 +126,7 @@ class PolymorphTest < ActiveSupport::TestCase
     assert_equal @join_count + 1, EatersFoodstuff.count
 
     assert @bits.eaters.reload
-    assert @bits.eaters.any? {|obj| obj == @chloe}
+    assert @bits.eaters.include?(@chloe)
   end
 
 #  not supporting this, since has_many :through doesn't support it either  
@@ -145,12 +145,12 @@ class PolymorphTest < ActiveSupport::TestCase
   def test_self_reference
     assert @kibbles.eaters << @bits
     assert_equal @kibbles_eaters_count += 1, @kibbles.eaters.count
-    assert @kibbles.eaters.any? {|obj| obj == @bits}
+    assert @kibbles.eaters.include?(@bits)
     @kibbles.reload
     assert @kibbles.foodstuffs_of_eaters.blank?
     
     @bits.reload
-    assert @bits.foodstuffs_of_eaters.any? {|obj| obj == @kibbles}
+    assert @bits.foodstuffs_of_eaters.include?(@kibbles)
     assert_equal [@kibbles], @bits.foodstuffs_of_eaters
   end
 
@@ -190,9 +190,9 @@ class PolymorphTest < ActiveSupport::TestCase
   def test_individual_collections_push
     assert_equal [@chloe], (@kibbles.eater_kittens << @chloe)
     @kibbles.reload
-    assert @kibbles.eaters.any? {|obj| obj == @chloe}
-    assert @kibbles.eater_kittens.any? {|obj| obj == @chloe}
-    assert !@kibbles.eater_dogs.any? {|obj| obj == @chloe}
+    assert @kibbles.eaters.include?(@chloe)
+    assert @kibbles.eater_kittens.include?(@chloe)
+    assert !@kibbles.eater_dogs.include?(@chloe)
   end
 
   def test_individual_collections_delete
@@ -204,7 +204,7 @@ class PolymorphTest < ActiveSupport::TestCase
     
     @kibbles.reload    
     assert @kibbles.eater_kittens.empty?
-    assert @kibbles.eater_dogs.any? {|obj| obj == @spot}
+    assert @kibbles.eater_dogs.include?(@spot)
   end
   
   def test_individual_collections_clear
@@ -217,14 +217,14 @@ class PolymorphTest < ActiveSupport::TestCase
 
     assert @kibbles.eater_kittens.empty?    
     assert_equal 2, @kibbles.eaters.size
-    assert !@kibbles.eater_kittens.any? {|obj| obj == @chloe}
-    assert !@kibbles.eaters.any? {|obj| obj == @chloe}
+    assert !@kibbles.eater_kittens.include?(@chloe)
+    assert !@kibbles.eaters.include?(@chloe)
 
     @kibbles.reload    
     assert @kibbles.eater_kittens.empty?    
     assert_equal 2, @kibbles.eaters.size
-    assert !@kibbles.eater_kittens.any? {|obj| obj == @chloe}
-    assert !@kibbles.eaters.any? {|obj| obj == @chloe}
+    assert !@kibbles.eater_kittens.include?(@chloe)
+    assert !@kibbles.eaters.include?(@chloe)
   end
   
   def test_childrens_individual_collections
@@ -316,13 +316,13 @@ class PolymorphTest < ActiveSupport::TestCase
 
   def test_namespaced_polymorphic_collection
     @shamu.aquatic_pupils << @swimmy
-    assert @shamu.aquatic_pupils.any? {|obj| obj == @swimmy}
+    assert @shamu.aquatic_pupils.include?(@swimmy)
     @shamu.reload
-    assert @shamu.aquatic_pupils.any? {|obj| obj == @swimmy}
+    assert @shamu.aquatic_pupils.include?(@swimmy)
 
     @shamu.aquatic_pupils << @spot
-    assert @shamu.dogs.any? {|obj| obj == @spot}
-    assert @shamu.aquatic_pupils.any? {|obj| obj == @swimmy}
+    assert @shamu.dogs.include?(@spot)
+    assert @shamu.aquatic_pupils.include?(@swimmy)
     assert_equal @swimmy, @shamu.aquatic_fish.first
     assert_equal 10, @shamu.aquatic_fish.first.speed
   end
@@ -333,8 +333,8 @@ class PolymorphTest < ActiveSupport::TestCase
     
     @shamu.reload
     @shamu.aquatic_pupils.delete @spot
-    assert !@shamu.dogs.any? {|obj| obj == @spot}
-    assert !@shamu.aquatic_pupils.any? {|obj| obj == @spot}
+    assert !@shamu.dogs.include?(@spot)
+    assert !@shamu.aquatic_pupils.include?(@spot)
     assert_equal 1, @shamu.aquatic_pupils.length
   end
   
@@ -357,9 +357,9 @@ class PolymorphTest < ActiveSupport::TestCase
     @alice.enemies << @spot
     @alice.reload
     @spot.reload
-    assert @spot.protectors.any? {|obj| obj == @alice}
-    assert @alice.enemies.any? {|obj| obj == @spot}
-    assert !@alice.protectors.any? {|obj| obj == @alice}
+    assert @spot.protectors.include?(@alice)
+    assert @alice.enemies.include?(@spot)
+    assert !@alice.protectors.include?(@alice)
     assert_equal 1, @alice.beautiful_fight_relationships_as_protector.size
     assert_equal 0, @alice.beautiful_fight_relationships_as_enemy.size
     assert_equal 1, @alice.beautiful_fight_relationships.size
@@ -367,7 +367,7 @@ class PolymorphTest < ActiveSupport::TestCase
     # self reference
     assert_equal 1, @alice.enemies.length
     @alice.enemies.push @alice
-    assert @alice.enemies.any? {|obj| obj == @alice}
+    assert @alice.enemies.include?(@alice)
     assert_equal 2, @alice.enemies.length    
     @alice.reload
     assert_equal 2, @alice.beautiful_fight_relationships_as_protector.size
@@ -386,7 +386,7 @@ class PolymorphTest < ActiveSupport::TestCase
     assert_equal @double_join_count + 1, BeautifulFightRelationship.count
 
     assert @alice.enemies.reload
-    assert @alice.enemies.any? {|obj| obj == @spot}
+    assert @alice.enemies.include?(@spot)
   end
   
   def test_double_dependency_injection
@@ -396,12 +396,12 @@ class PolymorphTest < ActiveSupport::TestCase
   def test_double_collection_deletion
     @alice.enemies << @spot
     @alice.reload
-    assert @alice.enemies.any? {|obj| obj == @spot}
+    assert @alice.enemies.include?(@spot)
     @alice.enemies.delete(@spot)
-    assert !@alice.enemies.any? {|obj| obj == @spot}
+    assert !@alice.enemies.include?(@spot)
     assert @alice.enemies.empty?
     @alice.reload
-    assert !@alice.enemies.any? {|obj| obj == @spot}
+    assert !@alice.enemies.include?(@spot)
     assert @alice.enemies.empty?
     assert_equal 0, @alice.beautiful_fight_relationships.size
   end
@@ -409,12 +409,12 @@ class PolymorphTest < ActiveSupport::TestCase
   def test_double_collection_deletion_from_opposite_side
     @alice.protectors << @puma
     @alice.reload
-    assert @alice.protectors.any? {|obj| obj == @puma}
+    assert @alice.protectors.include?(@puma)
     @alice.protectors.delete(@puma)
-    assert !@alice.protectors.any? {|obj| obj == @puma}
+    assert !@alice.protectors.include?(@puma)
     assert @alice.protectors.empty?
     @alice.reload
-    assert !@alice.protectors.any? {|obj| obj == @puma}
+    assert !@alice.protectors.include?(@puma)
     assert @alice.protectors.empty?
     assert_equal 0, @alice.beautiful_fight_relationships.size
   end
@@ -423,58 +423,59 @@ class PolymorphTest < ActiveSupport::TestCase
     assert @alice.dogs.empty?
     @alice.enemies << @spot
 
-    assert @alice.enemies.any? {|obj| obj == @spot}
-    assert !@alice.kittens.any? {|obj| obj == @alice}    
+    assert @alice.enemies.include?(@spot)
+    assert !@alice.kittens.include?(@alice)    
 
-    assert !@alice.dogs.any? {|obj| obj == @spot}    
+    assert !@alice.dogs.include?(@spot)    
     @alice.reload
-    assert @alice.dogs.any? {|obj| obj == @spot}    
-    assert !WildBoar.find(@alice.id).dogs.any? {|obj| obj == @spot} # make sure the parent type is checked
+    assert @alice.dogs.include?(@spot)    
+    assert !WildBoar.find(@alice.id).dogs.include?(@spot) # make sure the parent type is checked
   end
 
   def test_individual_collections_created_for_double_relationship_from_opposite_side
     assert @alice.wild_boars.empty?
     @alice.protectors << @puma
-    @alice.reload
 
-    assert @alice.protectors.any? {|obj| obj == @puma}
-    assert @alice.wild_boars.any? {|obj| obj == @puma}    
+    assert @alice.protectors.include?(@puma)
+    assert !@alice.wild_boars.include?(@puma)    
+    @alice.reload
+    assert @alice.wild_boars.include?(@puma)    
     
-    assert !Dog.find(@alice.id).wild_boars.any? {|obj| obj == @puma} # make sure the parent type is checked
+    assert !Dog.find(@alice.id).wild_boars.include?(@puma) # make sure the parent type is checked
   end
   
   def test_self_referential_individual_collections_created_for_double_relationship
     @alice.enemies << @alice
     @alice.reload
-    assert @alice.enemy_kittens.any? {|obj| obj == @alice}
-    assert @alice.protector_kittens.any? {|obj| obj == @alice}
-    assert @alice.kittens.any? {|obj| obj == @alice}
+    assert @alice.enemy_kittens.include?(@alice)
+    assert @alice.protector_kittens.include?(@alice)
+    assert @alice.kittens.include?(@alice)
     assert_equal 2, @alice.kittens.size
 
     @alice.enemies << (@chloe =  Kitten.find_by_name('Chloe'))
     @alice.reload
-    assert @alice.enemy_kittens.any? {|obj| obj == @chloe}
-    assert !@alice.protector_kittens.any? {|obj| obj == @chloe}
-    assert @alice.kittens.any? {|obj| obj == @chloe}
+    assert @alice.enemy_kittens.include?(@chloe)
+    assert !@alice.protector_kittens.include?(@chloe)
+    assert @alice.kittens.include?(@chloe)
     assert_equal 3, @alice.kittens.size    
   end
     
   def test_child_of_polymorphic_join_can_reach_parent
     @alice.enemies << @spot    
     @alice.reload
-    assert @spot.protectors.any? {|obj| obj == @alice}
+    assert @spot.protectors.include?(@alice)
   end
   
   def test_double_collection_deletion_from_child_polymorphic_join
     @alice.enemies << @spot
     @spot.protectors.delete(@alice)
-    assert !@spot.protectors.any? {|obj| obj == @alice}
+    assert !@spot.protectors.include?(@alice)
     @alice.reload
-    assert !@alice.enemies.any? {|obj| obj == @spot}
+    assert !@alice.enemies.include?(@spot)
     BeautifulFightRelationship.create(:protector_id => 2, :protector_type => "Dog", :enemy_id => @spot.id, :enemy_type => @spot.class.name)
     @alice.enemies << @spot
     @spot.protectors.delete(@alice)
-    assert !@spot.protectors.any? {|obj| obj == @alice}
+    assert !@spot.protectors.include?(@alice)
   end
 
   def test_collection_query_on_unsaved_record
@@ -485,15 +486,15 @@ class PolymorphTest < ActiveSupport::TestCase
   def test_double_individual_collections_push
     assert_equal [@chloe], (@spot.protector_kittens << @chloe)
     @spot.reload
-    assert @spot.protectors.any? {|obj| obj == @chloe}
-    assert @spot.protector_kittens.any? {|obj| obj == @chloe}
-    assert !@spot.protector_dogs.any? {|obj| obj == @chloe}
+    assert @spot.protectors.include?(@chloe)
+    assert @spot.protector_kittens.include?(@chloe)
+    assert !@spot.protector_dogs.include?(@chloe)
  
     assert_equal [@froggy], (@spot.frogs << @froggy)
     @spot.reload
-    assert @spot.enemies.any? {|obj| obj == @froggy}
-    assert @spot.frogs.any? {|obj| obj == @froggy}
-    assert !@spot.enemy_dogs.any? {|obj| obj == @froggy}
+    assert @spot.enemies.include?(@froggy)
+    assert @spot.frogs.include?(@froggy)
+    assert !@spot.enemy_dogs.include?(@froggy)
   end
 
   def test_double_individual_collections_delete
@@ -505,7 +506,7 @@ class PolymorphTest < ActiveSupport::TestCase
     
     @spot.reload    
     assert @spot.protector_kittens.empty?
-    assert @spot.wild_boars.any? {|obj| obj == @puma}
+    assert @spot.wild_boars.include?(@puma)
   end
   
   def test_double_individual_collections_clear
@@ -517,12 +518,12 @@ class PolymorphTest < ActiveSupport::TestCase
     @spot.reload    
     assert @spot.protector_kittens.empty?    
     assert_equal 1, @spot.protectors.size
-    assert !@spot.protector_kittens.any? {|obj| obj == @chloe}
-    assert !@spot.protectors.any? {|obj| obj == @chloe}
-    assert !@spot.protector_kittens.any? {|obj| obj == @alice}
-    assert !@spot.protectors.any? {|obj| obj == @alice}
-    assert @spot.protectors.any? {|obj| obj == @puma}
-    assert @spot.wild_boars.any? {|obj| obj == @puma}
+    assert !@spot.protector_kittens.include?(@chloe)
+    assert !@spot.protectors.include?(@chloe)
+    assert !@spot.protector_kittens.include?(@alice)
+    assert !@spot.protectors.include?(@alice)
+    assert @spot.protectors.include?(@puma)
+    assert @spot.wild_boars.include?(@puma)
   end 
 
   def test_single_extensions

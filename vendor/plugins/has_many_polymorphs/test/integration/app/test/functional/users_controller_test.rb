@@ -4,7 +4,7 @@ require 'users_controller'
 # Re-raise errors caught by the controller.
 class UsersController; def rescue_action(e) raise e end; end
 
-class UsersControllerTest < ActiveSupport::TestCase
+class UsersControllerTest < Test::Unit::TestCase
   fixtures :users
 
   def setup

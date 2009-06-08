@@ -4,7 +4,7 @@ require 'open-uri'
 
 # Start the server
 
-class ServerTest < ActiveSupport::TestCase
+class ServerTest < Test::Unit::TestCase
 
   PORT = 43040
   URL = "http://localhost:#{PORT}/"
