@@ -1,4 +1,4 @@
-# require_dependency 'application'
+require_dependency 'application'
 require File.dirname(__FILE__)+'/lib/tagging_methods'
 
 class TagsExtension < Radiant::Extension
