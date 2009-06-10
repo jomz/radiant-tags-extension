@@ -6,7 +6,6 @@ class TagSearchPageTest < Test::Unit::TestCase
   
   def setup
     @page = pages(:tags_page)
-    @page.layout = Layout.new(:name => 'Test', :content => '<r:content />')
     @page.request = ActionController::TestRequest.new
     @page.response = ActionController::TestResponse.new
   end

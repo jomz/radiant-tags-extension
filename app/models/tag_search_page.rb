@@ -1,6 +1,6 @@
 class TagSearchPage < Page
 
-  attr_accessor :query_result, :query
+  attr_accessor :requested_tag
   #### Tags ####
   desc %{    The namespace for all search tags.}
   tag 'search' do |tag|
@@ -9,19 +9,19 @@ class TagSearchPage < Page
 
   desc %{    Renders the passed query.}
   tag 'search:query' do |tag|
-    CGI.escapeHTML(query)
+    CGI.escapeHTML(requested_tag)
   end
   
   desc %{    Renders the contained block if no results were returned.}
   tag 'search:empty' do |tag|
-    if query_result.blank?
+    if found_tags.blank?
       tag.expand
     end
   end
   
   desc %{    Renders the contained block if results were returned.}
   tag 'search:results' do |tag|
-    unless query_result.blank?
+    unless found_tags.blank?
       tag.expand
     end
   end
@@ -30,7 +30,7 @@ class TagSearchPage < Page
     inside the tag refers to the found page.}
   tag 'search:results:each' do |tag|
     returning String.new do |content|
-      query_result.each do |page|
+      found_tags.each do |page|
         tag.locals.page = page
         content << tag.expand
       end
@@ -53,20 +53,18 @@ class TagSearchPage < Page
     true
   end
   
+  def found_tags
+    return @found_tags if @found_tags
+    return []          if requested_tag.blank?
+    
+    @found_tags = Page.tagged_with(requested_tag).delete_if { |p| !p.published? }
+  end
+  
   def render
-    @query_result = []
-    tag = @request.parameters[:tag]
-    self.title = "Tagged with #{tag}" if tag
-    unless (@query = tag).blank?
-      pages = Page.tagged_with(tag)
-      @query_result = pages.delete_if { |p| !p.published? }
-    end
-    lazy_initialize_parser_and_context
-    if layout
-      parse_object(layout)
-    else
-      render_page_part(:body)
-    end
+    self.requested_tag = @request.parameters[:tag]
+    self.title = "Tagged with #{requested_tag}" if requested_tag
+    
+    super
   end
   
 end
