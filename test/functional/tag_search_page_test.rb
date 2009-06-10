@@ -29,6 +29,12 @@ class TagSearchPageTest < Test::Unit::TestCase
     assert_match /Documentation/, output
   end
   
+  def test_resulting_pages_should_be_sorted
+    @page.request.request_parameters = {:tag => "lorem"}
+    output = @page.render
+    assert_match /Documentation.*Ruby Home Page/, output
+  end
+  
   def test_unknown_tag_should_say_so
     @page.request.request_parameters = {:tag => "foobarbar"}
     output = @page.render

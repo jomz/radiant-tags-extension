@@ -10,7 +10,7 @@ display_tags_part:
     <r:search:results>
       <h2>These pages are tagged with "<r:search:query/>".</h2>
       <ul>
-        <r:search:results:each>
+        <r:search:results:each order="desc" by="published_at">
           <li><r:link/> door <r:author/> op <r:date/></li>
         </r:search:results:each>
       </ul>

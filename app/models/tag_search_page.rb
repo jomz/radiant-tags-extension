@@ -26,11 +26,18 @@ class TagSearchPage < Page
     end
   end
 
-  desc %{    Renders the contained block for each result page.  The context
-    inside the tag refers to the found page.}
+  desc %{    <r:search:results:each [sort_by="id"] [order="asc"]/>
+    Renders the contained block for each result page.  The context
+    inside the tag refers to the found page. The optional sort_by and order attributes
+    specify how the results are sorted}
   tag 'search:results:each' do |tag|
+    # Ordering in Ruby because we already fetched our resultset before
+    tags = found_tags
+    tags = tags.sort_by(&tag.attr['sort_by'].to_sym)  if tag.attr['sort_by']
+    tags = tags.reverse                               if tag.attr['order'].to_s =~ /desc/i
+    
     returning String.new do |content|
-      found_tags.each do |page|
+      tags.each do |page|
         tag.locals.page = page
         content << tag.expand
       end
