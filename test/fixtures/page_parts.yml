@@ -1,0 +1,17 @@
+display_tags_part:
+  id: 1
+  page_id: 5
+  name: body
+  content: 
+    <h1>Results for <r:search:query /></h1>
+    <r:search:empty>
+      <h2>No pages tagged with "<r:search:query/>".</h2>
+    </r:search:empty>
+    <r:search:results>
+      <h2>These pages are tagged with "<r:search:query/>".</h2>
+      <ul>
+        <r:search:results:each order="desc" by="published_at">
+          <li><r:link/> door <r:author/> op <r:date/></li>
+        </r:search:results:each>
+      </ul>
+    </r:search:results>
