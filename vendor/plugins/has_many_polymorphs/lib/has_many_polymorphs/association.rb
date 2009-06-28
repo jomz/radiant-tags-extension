@@ -22,11 +22,7 @@ module ActiveRecord #:nodoc:
         @reflection.klass.transaction do
           flatten_deeper(records).each do |record|
             if @owner.new_record? or not record.respond_to?(:new_record?) or record.new_record?
-              unless @owner.valid?
-                raise PolymorphicError, "Invalid tag: #{@owner.name} - #{@owner.errors.full_messages}"
-              else
-                raise PolymorphicError, "You can't associate unsaved records."
-              end
+              raise PolymorphicError, "You can't associate unsaved records."            
             end
             next if @reflection.options[:skip_duplicates] and @target.include? record
             @owner.send(@reflection.through_reflection.name).proxy_target << @reflection.klass.create!(construct_join_attributes(record))
@@ -92,18 +88,19 @@ module ActiveRecord #:nodoc:
       def construct_quoted_owner_attributes(*args) #:nodoc:
         # no access to returning() here? why not?
         type_key = @reflection.options[:foreign_type_key]
-        {@reflection.primary_key_name => @owner.id,
-          type_key=> (@owner.class.base_class.name if type_key)}
+        h = {@reflection.primary_key_name => @owner.id}
+        h[type_key] = @owner.class.base_class.name if type_key
+        h
       end
 
       def construct_from #:nodoc:
         # build the FROM part of the query, in this case, the polymorphic join table
-        @reflection.klass.table_name
+        @reflection.klass.quoted_table_name
       end
 
       def construct_owner #:nodoc:
         # the table name for the owner object's class
-        @owner.class.table_name
+        @owner.class.quoted_table_name
       end
       
       def construct_owner_key #:nodoc:
@@ -118,10 +115,10 @@ module ActiveRecord #:nodoc:
 
       def construct_joins(custom_joins = nil) #:nodoc:
         # build the string of default joins
-        "JOIN #{construct_owner} polymorphic_parent ON #{construct_from}.#{@reflection.options[:foreign_key]} = polymorphic_parent.#{construct_owner_key} " + 
+        "JOIN #{construct_owner} AS polymorphic_parent ON #{construct_from}.#{@reflection.options[:foreign_key]} = polymorphic_parent.#{construct_owner_key} " + 
         @reflection.options[:from].map do |plural|
           klass = plural._as_class
-          "LEFT JOIN #{klass.table_name} ON #{construct_from}.#{@reflection.options[:polymorphic_key]} = #{klass.table_name}.#{klass.primary_key} AND #{construct_from}.#{@reflection.options[:polymorphic_type_key]} = #{@reflection.klass.quote_value(klass.base_class.name)}"
+          "LEFT JOIN #{klass.quoted_table_name} ON #{construct_from}.#{@reflection.options[:polymorphic_key]} = #{klass.quoted_table_name}.#{klass.primary_key} AND #{construct_from}.#{@reflection.options[:polymorphic_type_key]} = #{@reflection.klass.quote_value(klass.base_class.name)}"
         end.uniq.join(" ") + " #{custom_joins}"
       end
 

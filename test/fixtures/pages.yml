@@ -14,7 +14,7 @@ documentation:
   slug: documentation
   status_id: 100
   parent_id: 1
-  published_at: 2006-01-30 08:41:07 
+  published_at: 2006-01-31 08:41:07 
 books:
   id: 3
   title: Books
@@ -30,4 +30,14 @@ textile:
   slug: textile
   status_id: 100
   parent_id: 1
+  published_at: 2006-01-30 08:41:07
+
+tags_page:
+  id: 5
+  title: Tags Page
+  breadcrumb: tags
+  slug: tags
+  status_id: 100
+  parent_id: 1
+  class_name: TagSearchPage
   published_at: 2006-01-30 08:41:07

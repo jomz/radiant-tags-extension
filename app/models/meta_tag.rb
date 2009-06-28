@@ -24,19 +24,25 @@ class MetaTag < ActiveRecord::Base
     :through => :taggings, 
     :dependent => :destroy,
     :skip_duplicates => false
- 
+  
   def after_save
     # if you allow editable tag names, you might want before_save instead 
     self.name = name.downcase.strip.squeeze(" ")
   end
-  
-  def self.cloud(args = {})
-    find(:all, :select => 'meta_tags.*, count(*) as popularity',
+ 
+  class << self
+    def find_or_create_by_name!(name)
+      find_by_name(name) || create!(:name => name)
+    end
+
+    def cloud(args = {})
+      find(:all, :select => 'meta_tags.*, count(*) as popularity',
       :limit => args[:limit] || 5,
       :joins => "JOIN taggings ON taggings.meta_tag_id = meta_tags.id",
       :conditions => args[:conditions],
       :group => "meta_tags.id, meta_tags.name",
       :order => "popularity DESC" )
+    end
   end
   
   def <=>(other)
