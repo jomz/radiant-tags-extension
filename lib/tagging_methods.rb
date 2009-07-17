@@ -34,7 +34,7 @@ TaggingMethods = Proc.new do
    #         Model.tagged_with("hello", "world", :limit => 10)
    #
    def self.tagged_with(*tag_list)
-     options = tag_list.last.is_a?(Hash) ? tag_list.pop : {}
+     options = tag_list.extract_options!
      tag_list = parse_tags(tag_list)
    
      scope = scope(:find)
@@ -44,7 +44,7 @@ TaggingMethods = Proc.new do
      sql  = "SELECT #{(scope && scope[:select]) || options[:select]} "
      sql << "FROM #{(scope && scope[:from]) || options[:from]} "
 
-     add_joins!(sql, options, scope)
+     add_joins!(sql, options[:joins], scope)
    
      sql << "WHERE #{table_name}.#{primary_key} = taggings.taggable_id "
      sql << "AND taggings.taggable_type = '#{ActiveRecord::Base.send(:class_name_of_active_record_descendant, self).to_s}' "
