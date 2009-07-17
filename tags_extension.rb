@@ -41,7 +41,6 @@ class TagsExtension < Radiant::Extension
       # dirty hack; need to get trough here to allow migrations to run..
     end
     Page.module_eval &TaggingMethods
-    SiteController.send :include, SiteControllerExtensions
     admin.page.edit.add :extended_metadata, 'tag_field'
     
     # HELP
