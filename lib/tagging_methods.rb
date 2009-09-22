@@ -11,7 +11,7 @@ TaggingMethods = Proc.new do
     tags.split(MetaTag::DELIMITER).each do |tag|
       begin
         tag = MetaTag.find_or_initialize_by_name(tag.strip.squeeze(" "))
-        meta_tags.target << tag unless self.meta_tags.include?(tag)
+        meta_tags << tag unless meta_tags.include?(tag)
       rescue ActiveRecord::StatementInvalid => e  
         # With SQLite3 - a duplicate tagging will result in the following message:
         # SQLite3::SQLException: SQL logic error or missing database: INSERT INTO taggings ("meta_tag_id", "taggable_type", "taggable_id") VALUES(11, 'Page', 74)
