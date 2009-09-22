@@ -4,3 +4,5 @@
       Tags
   %td.field
     = f.text_field :meta_tags, :value => @page.tag_list, :class => 'textbox', :maxlength => 160
+    - unless model.errors.on_base.nil?
+      %span.error= model.errors.on_base
