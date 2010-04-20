@@ -46,6 +46,7 @@ module RadiusTags
     tag.attr["with"] = tag.locals.page.tag_list.split(MetaTag::DELIMITER)
     tag.attr["with_any"] = true
     results = find_with_tag_options(tag)
+    results -= [tag.locals.page]
     output = []
     first = true
     results.each do |page|
