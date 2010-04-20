@@ -55,6 +55,7 @@ module RadiusTags
     tag.attr["with_any"] = true
     results = find_with_tag_options(tag)
     results -= [tag.locals.page]
+    return false if results.size < 1
     output = []
     first = true
     results.each do |page|
@@ -64,6 +65,14 @@ module RadiusTags
       first = false
     end
     output
+  end
+  
+  tag "if_has_related_by_tags" do |tag|
+    tag.attr["with"] = tag.locals.page.tag_list.split(MetaTag::DELIMITER)
+    tag.attr["with_any"] = true
+    results = find_with_tag_options(tag)
+    results -= [tag.locals.page]
+    tag.expand if results.size > 0
   end
   
   tag "related_by_tags:if_first" do |tag|
