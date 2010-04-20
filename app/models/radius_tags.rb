@@ -37,6 +37,31 @@ module RadiusTags
   end
   
   desc %{
+    Find all pages related to the current page, based on all or any of the current page's tags. A scope attribute may be given to limit results to a certain site area.
+    
+    *Usage:*
+    <pre><code><r:related_by_tags [scope="/fashion/cult-update"] [offset="number"] [limit="number"] [by="attribute"] [order="asc|desc"]>...</r:related_by_tags></code></pre>
+  }
+  tag "related_by_tags" do |tag|
+    tag.attr["with"] = tag.locals.page.tag_list.split(MetaTag::DELIMITER)
+    tag.attr["with_any"] = true
+    results = find_with_tag_options(tag)
+    output = []
+    first = true
+    results.each do |page|
+      tag.locals.page = page
+      tag.locals.first = first
+      output << tag.expand
+      first = false
+    end
+    output
+  end
+  
+  tag "related_by_tags:if_first" do |tag|
+    tag.expand if tag.locals.first
+  end
+  
+  desc %{
     Render a Tag cloud
     The results_page attribute will default to #{Radiant::Config['tags.results_page_url']}
     
