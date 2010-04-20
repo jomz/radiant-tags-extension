@@ -9,11 +9,19 @@ module RadiusTags
     The <pre><r:unless_tagged with="" /></pre> is also available.
   }
   tag "if_tagged" do |tag|
-    tag.locals.tagged_results = find_with_tag_options(tag)
-    tag.expand unless tag.locals.tagged_results.empty?
+    if tag.attr["with"]
+      tag.locals.tagged_results = find_with_tag_options(tag)
+      tag.expand unless tag.locals.tagged_results.empty?
+    else
+      tag.expand unless tag.locals.page.tag_list.empty?
+    end
   end
   tag "unless_tagged" do |tag|
-    tag.expand if find_with_tag_options(tag).empty?
+    if tag.attr["with"]
+      tag.expand if find_with_tag_options(tag).empty?
+    else
+      tag.expand if tag.locals.page.tag_list.empty?
+    end
   end
   
   desc %{
