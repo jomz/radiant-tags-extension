@@ -138,6 +138,30 @@ module RadiusTags
     tag.locals.page.tag_list.split(MetaTag::DELIMITER).each {|t| output << "<a href=\"http://technorati.com/tag/#{ t.split(" ").join("+")}\" rel=\"tag\">#{t}</a>"}
     output.join ", "
   end
+  
+  tag "tags" do |tag|
+    tag.expand
+  end
+  
+  desc "Iterates over the tags of the current page"
+  tag "tags:each" do |tag|
+    result = []
+    tag.locals.page.meta_tags.each do |meta_tag|
+      tag.locals.meta_tag = meta_tag
+      result << tag.expand
+    end
+    result
+  end
+  
+  tag "tags:each:name" do |tag|
+    tag.locals.meta_tag.name
+  end
+  
+  tag "tags:each:link" do |tag|
+    results_page = tag.attr['results_page'] || Radiant::Config['tags.results_page_url']
+    name = tag.locals.meta_tag.name
+    return "<a href=\"#{results_page}?tag=#{name}\" class=\"tag\">#{name}</a>"
+  end
 
   desc "Set the scope for all tags in the database"
   tag "all_tags" do |tag|
