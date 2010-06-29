@@ -9,11 +9,19 @@ module RadiusTags
     The <pre><r:unless_tagged with="" /></pre> is also available.
   }
   tag "if_tagged" do |tag|
-    tag.locals.tagged_results = find_with_tag_options(tag)
-    tag.expand unless tag.locals.tagged_results.empty?
+    if tag.attr["with"]
+      tag.locals.tagged_results = find_with_tag_options(tag)
+      tag.expand unless tag.locals.tagged_results.empty?
+    else
+      tag.expand unless tag.locals.page.tag_list.empty?
+    end
   end
   tag "unless_tagged" do |tag|
-    tag.expand if find_with_tag_options(tag).empty?
+    if tag.attr["with"]
+      tag.expand if find_with_tag_options(tag).empty?
+    else
+      tag.expand if tag.locals.page.tag_list.empty?
+    end
   end
   
   desc %{
@@ -34,6 +42,41 @@ module RadiusTags
       output << tag.expand
     end
     output
+  end
+  
+  desc %{
+    Find all pages related to the current page, based on all or any of the current page's tags. A scope attribute may be given to limit results to a certain site area.
+    
+    *Usage:*
+    <pre><code><r:related_by_tags [scope="/fashion/cult-update"] [offset="number"] [limit="number"] [by="attribute"] [order="asc|desc"]>...</r:related_by_tags></code></pre>
+  }
+  tag "related_by_tags" do |tag|
+    tag.attr["with"] = tag.locals.page.tag_list.split(MetaTag::DELIMITER)
+    tag.attr["with_any"] = true
+    results = find_with_tag_options(tag)
+    results -= [tag.locals.page]
+    return false if results.size < 1
+    output = []
+    first = true
+    results.each do |page|
+      tag.locals.page = page
+      tag.locals.first = first
+      output << tag.expand
+      first = false
+    end
+    output
+  end
+  
+  tag "if_has_related_by_tags" do |tag|
+    tag.attr["with"] = tag.locals.page.tag_list.split(MetaTag::DELIMITER)
+    tag.attr["with_any"] = true
+    results = find_with_tag_options(tag)
+    results -= [tag.locals.page]
+    tag.expand if results.size > 0
+  end
+  
+  tag "related_by_tags:if_first" do |tag|
+    tag.expand if tag.locals.first
   end
   
   desc %{
@@ -94,6 +137,30 @@ module RadiusTags
     output = []
     tag.locals.page.tag_list.split(MetaTag::DELIMITER).each {|t| output << "<a href=\"http://technorati.com/tag/#{ t.split(" ").join("+")}\" rel=\"tag\">#{t}</a>"}
     output.join ", "
+  end
+  
+  tag "tags" do |tag|
+    tag.expand
+  end
+  
+  desc "Iterates over the tags of the current page"
+  tag "tags:each" do |tag|
+    result = []
+    tag.locals.page.meta_tags.each do |meta_tag|
+      tag.locals.meta_tag = meta_tag
+      result << tag.expand
+    end
+    result
+  end
+  
+  tag "tags:each:name" do |tag|
+    tag.locals.meta_tag.name
+  end
+  
+  tag "tags:each:link" do |tag|
+    results_page = tag.attr['results_page'] || Radiant::Config['tags.results_page_url']
+    name = tag.locals.meta_tag.name
+    return "<a href=\"#{results_page}?tag=#{name}\" class=\"tag\">#{name}</a>"
   end
 
   desc "Set the scope for all tags in the database"
