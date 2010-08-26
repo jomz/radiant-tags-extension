@@ -57,7 +57,7 @@ TaggingMethods = Proc.new do
      sql << "AND taggings.taggable_type = '#{ActiveRecord::Base.send(:class_name_of_active_record_descendant, self).to_s}' "
      sql << "AND taggings.meta_tag_id = meta_tags.id "
    
-     sql << "AND (#{sanitize_sql(['meta_tags.name IN (?)', tag_list])}) "
+     sql << "AND (#{sanitize_sql(['meta_tags.name IN (?)', tag_list.map{|name| name.strip.squeeze(' ')}])}) "
      sql << "AND #{sanitize_sql(options[:conditions])} " if options[:conditions]
       
      columns = column_names.map do |column| 
@@ -93,7 +93,7 @@ TaggingMethods = Proc.new do
      
      sql << "AND ("
      sql << tag_list.inject([]) do |arr,name|
-              arr << sanitize_sql(["meta_tags.name = ?", name])
+              arr << sanitize_sql(["meta_tags.name = ?", name.strip.squeeze(' ')])
             end.join(" OR ")
      sql << ") "
      
