@@ -68,10 +68,20 @@ class TagSearchPage < Page
   end
   
   def render
-    self.requested_tag = @request.parameters[:tag]
+    self.requested_tag = @request.parameters[:tag] unless requested_tag
     self.title = "Tagged with #{requested_tag}" if requested_tag
     
     super
+  end
+
+  def find_by_url(url, live = true, clean = false)
+    url = clean_url(url)
+    if url =~ /^#{self.url}([\w|\s]*)\/?$/
+      self.requested_tag = $1
+      self
+    else
+      super
+    end
   end
   
 end
