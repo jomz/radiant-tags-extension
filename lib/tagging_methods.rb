@@ -95,9 +95,8 @@ TaggingMethods = Proc.new do
      
      sql << "AND ("
      or_options = []
-     tag_list.each do |name|
-       or_options << "meta_tags.name in (\"#{name.strip.squeeze(' ')}\")"
-     end
+     or_options << "meta_tags.name in (#{tag_list.collect{|t| '\'' + t + '\''}.join(',')})"
+     
      or_options_joined = or_options.join(" OR ")
      sql << "#{or_options_joined}) "
      
