@@ -186,6 +186,7 @@ module RadiusTags
       all_tags = MetaTag.cloud(:limit => limit)
     end
     all_tags.each do |t|
+      next if t.pages.empty? # skip unused tags
       tag.locals.meta_tag = t
       result << tag.expand
     end
