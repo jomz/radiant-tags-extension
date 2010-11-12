@@ -53,8 +53,8 @@ module RadiusTags
   tag "related_by_tags" do |tag|
     tag.attr["with"] = tag.locals.page.tag_list.split(MetaTag::DELIMITER)
     tag.attr["with_any"] = true
+    tag.attr["exclude_id"] = tag.locals.page.id
     results = find_with_tag_options(tag)
-    results -= [tag.locals.page]
     return false if results.size < 1
     output = []
     first = true
@@ -70,6 +70,7 @@ module RadiusTags
   tag "if_has_related_by_tags" do |tag|
     tag.attr["with"] = tag.locals.page.tag_list.split(MetaTag::DELIMITER)
     tag.attr["with_any"] = true
+    tag.attr["exclude_id"] = tag.locals.page.id
     results = find_with_tag_options(tag)
     results -= [tag.locals.page]
     tag.expand if results.size > 0
@@ -289,15 +290,17 @@ module RadiusTags
     options[:order] = order_string
     
     status = (attr[:status] || 'published').downcase
+    exclude = attr[:exclude_id] ? "AND pages.id != #{attr[:exclude_id]}" : ""
+    
     unless status == 'all'
       stat = Status[status]
       unless stat.nil?
-        options[:conditions] = ["(virtual = ?) and (status_id = ?)", false, stat.id]
+        options[:conditions] = ["(virtual = ?) and (status_id = ?) #{exclude}", false, stat.id]
       else
         raise TagError.new(%{`status' attribute of `each' tag must be set to a valid status})
       end
     else
-      options[:conditions] = ["virtual = ?", false]
+      options[:conditions] = ["virtual = ? #{exclude}", false]
     end
     options
   end
