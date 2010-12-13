@@ -303,7 +303,7 @@ module RadiusTags
     unless status == 'all'
       stat = Status[status]
       unless stat.nil?
-        options[:conditions] = ["(virtual = ?) and (status_id = ?) #{exclude}", false, stat.id]
+        options[:conditions] = ["(virtual = ?) and (status_id = ?) #{exclude} and (published_at <= ?)", false, stat.id, Time.current]
       else
         raise TagError.new(%{`status' attribute of `each' tag must be set to a valid status})
       end
