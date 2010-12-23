@@ -69,7 +69,7 @@ class TagSearchPage < Page
   
   def render
     self.requested_tag = @request.parameters[:tag] unless requested_tag
-    self.title = "Tagged with #{requested_tag}" if requested_tag
+    self.title = "#{self.title} #{requested_tag}" if requested_tag
     
     super
   end

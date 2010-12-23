@@ -2,4 +2,5 @@
 de:
   tags:
     tags: "Schlagworte"
+    no_tags_found: "<p>Es wurden keine Schlagworte gefunden.</p>"
 

@@ -2,3 +2,5 @@
 en:
   tags:
     tags: "Tags"
+    no_tags_found: "<p>No tags found.</p>"
+

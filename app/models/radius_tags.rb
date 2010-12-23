@@ -97,7 +97,7 @@ module RadiusTags
     		output += "<li class=\"#{cloud_class}\"><span>#{pluralize(amount, 'page is', 'pages are')} tagged with </span><a href=\"#{results_page}/#{tag}\" class=\"tag\">#{tag}</a></li>"
     	end
     else
-    	return "<p>No tags found.</p>"
+    	return I18n.t('tags.no_tags_found')
     end
     output += "</ol>"
   end
@@ -120,7 +120,7 @@ module RadiusTags
           output += "<li class=\"#{cloud_class}\"><a href=\"#{results_page}/#{tag}\" class=\"tag\">#{tag} (#{amount})</a></li>"
         end
     else
-        return "<p>No tags found.</p>"
+        return I18n.t('tags.no_tags_found')
     end
     output += "</ul>"
   end
