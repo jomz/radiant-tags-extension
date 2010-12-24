@@ -68,7 +68,7 @@ class TagSearchPage < Page
   end
   
   def render
-    self.requested_tag = @request.parameters[:tag] unless requested_tag
+    self.requested_tag = @request.parameters[:tag] if requested_tag && requested_tag.blank?
     self.title = "#{self.title} #{requested_tag}" if requested_tag
     
     super
