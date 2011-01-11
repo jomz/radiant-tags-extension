@@ -118,7 +118,7 @@ module RadiusTags
     output = "<ul class=\"tag_list\">"
     if tag_cloud.length > 0
         build_tag_cloud(tag_cloud, %w(size1 size2 size3 size4 size5 size6 size7 size8 size9)) do |tag, cloud_class, amount|
-          output += "<li class=\"#{cloud_class}\"><a href=\"#{results_page}?tag=#{tag}\" class=\"tag\">#{tag} (#{amount})</a></li>"
+          output += "<li class=\"#{cloud_class}\"><a href=\"#{results_page}/#{tag}\" class=\"tag\">#{tag} (#{amount})</a></li>"
         end
     else
         return "<p>No tags found.</p>"
@@ -128,8 +128,9 @@ module RadiusTags
  
   desc "List the current page's tags"
   tag "tag_list" do |tag|
+    results_page = tag.attr['results_page'] || Radiant::Config['tags.results_page_url']
     output = []
-    tag.locals.page.tag_list.split(MetaTag::DELIMITER).each {|t| output << "<a href=\"#{tag_item_url(t)}\" class=\"tag\">#{t}</a>"}
+    tag.locals.page.tag_list.split(MetaTag::DELIMITER).each {|t| output << "<a href=\"#{results_page}/#{t}\" class=\"tag\">#{t}</a>"}
     output.join ", "
   end
   
@@ -251,7 +252,7 @@ module RadiusTags
     ttag = tag.attr['with'] || @request.parameters[:tag]
     
     scope = scope_attr == 'current_page' ? Page.find_by_url(@request.request_uri) : Page.find_by_url(scope_attr)
-    return "The scope attribute must be a valid url to an existing page." if scope.class_name.eql?('FileNotFoundPage')
+    return "The scope attribute must be a valid url to an existing page." if scope.nil? || scope.class_name.eql?('FileNotFoundPage')
     
     if with_any
       Page.tagged_with_any(ttag, options).each do |page|
