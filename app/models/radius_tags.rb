@@ -202,7 +202,7 @@ module RadiusTags
   tag "all_tags:each:link" do |tag|
     results_page = tag.attr['results_page'] || Radiant::Config['tags.results_page_url']
     name = tag.locals.meta_tag.name
-    return "<a href=\"#{results_page}?tag=#{name}\" class=\"tag\">#{name}</a>"
+    return "<a href=\"#{results_page}/#{name}\" class=\"tag\">#{name}</a>"
   end
   
   
