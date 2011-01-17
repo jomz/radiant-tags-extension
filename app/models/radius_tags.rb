@@ -84,7 +84,7 @@ module RadiusTags
     The results_page attribute will default to #{Radiant::Config['tags.results_page_url']}
     
     *Usage:*
-    <pre><code><r:tag_cloud_list [limit="number"] [results_page="/some/url"] [scope="/some/url"]/></code></pre>
+    <pre><code><r:tag_cloud [limit="number"] [results_page="/some/url"] [scope="/some/url"]/></code></pre>
   }
   tag "tag_cloud" do |tag|
     tag_cloud = MetaTag.cloud(:limit => tag.attr['limit'] || 5).sort
