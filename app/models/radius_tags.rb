@@ -101,6 +101,29 @@ module RadiusTags
     end
     output += "</ol>"
   end
+
+  desc %{
+    Render a Tag cloud with div-tags
+    The results_page attribute will default to #{Radiant::Config['tags.results_page_url']}
+    
+    *Usage:*
+    <pre><code><r:tag_cloud_div [limit="number"] [results_page="/some/url"] [scope="/some/url"]/></code></pre>
+  }
+  tag "tag_cloud_div" do |tag|
+    tag_cloud = MetaTag.cloud(:limit => tag.attr['limit'] || 5).sort
+    tag_cloud = filter_tags_to_url_scope(tag_cloud, tag.attr['scope']) unless tag.attr['scope'].nil?
+    
+    results_page = tag.attr['results_page'] || Radiant::Config['tags.results_page_url']
+    output = "<div class=\"tag_cloud\">"
+    if tag_cloud.length > 0
+    	build_tag_cloud(tag_cloud, %w(size1 size2 size3 size4 size5 size6 size7 size8 size9)) do |tag, cloud_class, amount|
+    		output += "<div class=\"#{cloud_class}\"><span>#{pluralize(amount, 'page is', 'pages are')} tagged with </span><a href=\"#{results_page}/#{tag}\" class=\"tag\">#{tag}</a></div>"
+    	end
+    else
+    	return I18n.t('tags.no_tags_found')
+    end
+    output += "</div>"
+  end
  
   desc %{
     Render a Tag list, more for 'categories'-ish usage, i.e.: Cats (2) Logs (1) ...
