@@ -117,7 +117,7 @@ module RadiusTags
     output = "<div class=\"tag_cloud\">"
     if tag_cloud.length > 0
     	build_tag_cloud(tag_cloud, %w(size1 size2 size3 size4 size5 size6 size7 size8 size9)) do |tag, cloud_class, amount|
-    		output += "<div class=\"#{cloud_class}\"><span>#{pluralize(amount, 'page is', 'pages are')} tagged with </span><a href=\"#{results_page}/#{tag}\" class=\"tag\">#{tag}</a></div>"
+    		output += "<div class=\"#{cloud_class}\"><a href=\"#{results_page}/#{tag}\" class=\"tag\">#{tag}</a></div>"
     	end
     else
     	return I18n.t('tags.no_tags_found')
