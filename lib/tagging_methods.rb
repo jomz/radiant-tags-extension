@@ -97,12 +97,10 @@ TaggingMethods = Proc.new do
      sql << "AND pages.site_id = #{current_site.id} " if self.respond_to?(:current_site)
      
      sql << "AND ("
-     or_options = []
-     tag_list.each do |name|
-       or_options << "meta_tags.name in (\"#{name.strip.squeeze(' ')}\")"
-     end
-     or_options_joined = or_options.join(" OR ")
-     sql << "#{or_options_joined}) "
+     sql << tag_list.inject([]) do |arr,name|
+              arr << sanitize_sql(["meta_tags.name = ?", name.strip.squeeze(' ')])
+            end.join(" OR ")
+     sql << ") "
      
      
      sql << "AND #{sanitize_sql(options[:conditions])} " if options[:conditions]

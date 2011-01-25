@@ -75,8 +75,8 @@ class TagSearchPage < Page
   end
 
   def find_by_url(url, live = true, clean = false)
-    url = clean_url(url)
-    if url =~ /^#{self.url}([\w|\s]*)\/?$/
+    url = clean_url(url).chop # chop off trailing slash added by clean_url
+    if url =~ /^#{self.url}([a-zA-Z0-9,\_\-\s\/()'.&]*)\/?$/
       self.requested_tag = $1
       self
     else
