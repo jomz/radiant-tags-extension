@@ -118,7 +118,7 @@ module RadiusTags
     output = "<p class=\"tag_cloud\">"
     if tag_cloud.length > 0
     	build_tag_cloud(tag_cloud, %w(size1 size2 size3 size4 size5 size6 size7 size8 size9)) do |tag, cloud_class, amount|
-    		output += "<div class=\"#{cloud_class}\"><a href=\"#{results_page}/#{tag}\" class=\"tag\">#{tag}</a></div>"
+    		output += "<div class=\"#{cloud_class}\"><a href=\"#{results_page}/#{tag}\" class=\"tag\">#{tag}</a></div>\n"
     	end
     else
     	return I18n.t('tags.no_tags_found')
@@ -197,18 +197,14 @@ module RadiusTags
     Iterates through each tag and allows you to specify the order: by popularity or by name.
     The default is by name. You may also limit the search; the default is 5 results.
     
-    Usage: <pre><code><r:all_tags:each order="popularity" limit="5">...</r:all_tags:each></code></pre>
+    Usage: <pre><code><r:all_tags:each [order="asc|desc"] [by="name|popularity"] limit="5">...</r:all_tags:each></code></pre>
   }
   tag "all_tags:each" do |tag|
-    order = tag.attr['order'] || 'name'
+    by = tag.attr['by'] || 'name'
+    order = tag.attr['order'] || 'asc'
     limit = tag.attr['limit'] || '5'
     result = []
-    case order
-    when 'name'
-      all_tags = MetaTag.find(:all, :limit => limit)
-    else
-      all_tags = MetaTag.cloud(:limit => limit)
-    end
+    all_tags = MetaTag.cloud(:limit => limit, :order => order, :by => by)
     all_tags.each do |t|
       next if t.pages.empty? # skip unused tags
       tag.locals.meta_tag = t
@@ -225,9 +221,18 @@ module RadiusTags
   tag "all_tags:each:link" do |tag|
     results_page = tag.attr['results_page'] || Radiant::Config['tags.results_page_url']
     name = tag.locals.meta_tag.name
-    return "<a href=\"#{results_page}/#{name}\" class=\"tag\">#{name}</a>"
+    "<a href=\"#{results_page}/#{name}\" class=\"tag\">#{name}</a>"
   end
-  
+
+  tag "all_tags:each:popularity" do |tag|
+    (tag.locals.meta_tag.respond_to?(:popularity)) ? tag.locals.meta_tag.popularity : ""
+  end
+
+  tag "all_tags:each:url" do |tag|
+    results_page = tag.attr['results_page'] || Radiant::Config['tags.results_page_url']
+    name = tag.locals.meta_tag.name
+    "#{results_page}/#{name}"
+  end
   
   desc "Set the scope for the tag's pages"
   tag "all_tags:each:pages" do |tag|
