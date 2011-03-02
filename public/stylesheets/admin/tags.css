@@ -1,0 +1,21 @@
+tr.tags ul.holder { width: 99.5%; margin: 0; border: 1px solid #999; overflow: hidden; height: auto !important; height: 1%; padding: 4px 5px 0; background-color: white; display: block !important; }
+*:first-child+html ul.holder { padding-bottom: 2px; } * html ul.holder { padding-bottom: 2px; } /* ie7 and below */
+tr.tags ul.holder li { float: left; list-style-type: none; margin: 0 5px 4px 0;}
+tr.tags ul.holder li.bit-box { -moz-border-radius: 6px; -webkit-border-radius: 6px; border-radius: 6px; border: 1px solid #CAD8F3; background: #DEE7F8; padding: 1px 5px 2px; }
+tr.tags ul.holder li.bit-box-focus { border-color: #598BEC; background: #598BEC; color: #fff; }
+tr.tags ul.holder li.bit-input input { width: 150px; margin: 0; border: none; outline: 0; padding: 3px 0 2px; } /* no left/right padding here please */
+tr.tags ul.holder li.bit-box { padding-right: 15px !important; position: relative; color: #000 !important;}
+tr.tags ul.holder li.bit-input { margin: 0;}
+
+tr.tags ul.holder li.bit-box a.closebutton { position: absolute; right: 4px; top: 5px; display: block; width: 7px; height: 7px; font-size: 1px; background: url('/images/admin/tagclose.gif'); }
+tr.tags ul.holder li.bit-box a.closebutton:hover { background-position: 7px; }
+tr.tags ul.holder li.bit-box-focus a.closebutton, tr.tags ul.holder li.bit-box-focus a.closebutton:hover { background-position: bottom; }
+
+
+#tag_container { display: none; position: relative; background: #eee; width: 101%; }
+#tag_container .default { padding: 5px 7px; border: 1px solid #ccc; border-width: 0 1px 1px; color: black; text-align: left; }
+#tag_container ul { display: none; margin: 0; padding: 0; overflow: auto }
+#tag_container ul li { display: block; padding: 5px 12px; z-index: 1000; cursor: pointer; margin: 0; list-style-type: none; border: 1px solid #ccc; border-width: 0 1px 1px; font: 11px "Lucida Grande", "Verdana"; text-align: left; color: black;}
+#tag_container ul li em { font-weight: bold; font-style: normal; background: #ccc; }
+#tag_container ul li.auto-focus { background: #4173CC; color: #fff; }
+#tag_container ul li.auto-focus em { background: none; }

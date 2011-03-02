@@ -1,0 +1,17 @@
+<% 
+  include_javascript 'admin/protomultiselect.js'
+  include_stylesheet 'admin/tags.css'
+%>
+
+<% content_for 'page_scripts' do %>
+  document.observe('dom:loaded', function() {
+    var taglist = new FacebookList('page_meta_tags', 'tag_container', {
+      newValues: true, 
+      separator: ';',
+      separatorKeyCode: 186
+    })
+    
+    var tags = <%= MetaTag.all.map {|tag| {:caption => tag.name, :value => tag.name} }.to_json %>
+    tags.each(function(t) { taglist.autoFeed(t) })  
+  });
+<% end %>

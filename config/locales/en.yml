@@ -1,0 +1,5 @@
+en:
+  admin:
+    pages:
+      tag_field:
+        type_a_tag: Type a tag

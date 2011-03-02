@@ -1,8 +1,14 @@
-%tr
+= render 'tag_field_javascript' if Radiant::Config['tags.complex_strings'] == 'true'
+
+%tr.tags
   %th.label
     %label{:for => "page_meta_tags"}
       Tags
   %td.field
     = f.text_field :meta_tags, :value => @page.tag_list, :class => 'textbox'
+    #tag_container{:style => "display: none"}
+      .default
+        = t('.type_a_tag')
+      %ul
     - unless model.errors.on_base.nil?
       %span.error= model.errors.on_base
