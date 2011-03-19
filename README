@@ -3,7 +3,6 @@
 Created by: Keith Bingman - keithbingman.com
 Revived by: Benny Degezelle - gorilla-webdesign.be
 New features by: Jim Gay - saturnflyer.com
-Version: 1.5
 
 This extension enhances the page model with tagging capabilities, tagging as in "2.0" and tagclouds.
 
@@ -15,7 +14,16 @@ You can change the load order of extensions in config/environment.rb (see http:/
 
 == Installation
 
-1. Copy the extension to your vendor/extensions directory as you would any other extension.
+=== Using RubyGems
+
+`gem install radiant-tags-extension`
+
+add the following line to your environment.rb
+config.gem 'radiant-tags-extension'
+
+=== Classic style
+
+1. Copy the extension to your vendor/extensions directory as you would any other extension or use `script/extension install tags`
 2. Run 'rake radiant:extensions:tags:install'
 3. Make a page to sit in /search/by-tag, and give it the "Tag Search" pagetype.
 	If you want to change this location, it's in Radiant::Config['tags.results_page_url'].
