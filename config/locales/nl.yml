@@ -1,4 +1,5 @@
 nl:
   tags_extension:
+    no_tags_found: "<p>Geen tags gevonden.</p>"
     tags: Tags
     type_a_tag: Onderscheid tags met ;
