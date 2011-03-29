@@ -168,14 +168,23 @@ module RadiusTags
     tag.expand
   end
   
-  desc "Iterates over the tags of the current page"
+  desc %{
+    Cycles through the tags of the current page
+    Accepts an optional @limit@ attributem default is to show everything.
+    
+    Usage: <pre><code><r:tags:each [limit="4"]>...</r:tags:each></code></pre>
+  }
   tag "tags:each" do |tag|
-    result = []
-    tag.locals.page.meta_tags.each do |meta_tag|
-      tag.locals.meta_tag = meta_tag
-      result << tag.expand
+    selected_tags = tag.locals.page.meta_tags
+    if tag.attr['limit']
+      selected_tags = selected_tags.first(tag.attr['limit'].to_i)
     end
-    result
+    selected_tags.enum_with_index.collect do |meta_tag, index|
+      tag.locals.meta_tag = meta_tag
+      tag.locals.is_first_meta_tag = index == 0
+      tag.locals.is_last_meta_tag = index == selected_tags.length - 1
+      tag.expand
+    end
   end
   
   tag "tags:each:name" do |tag|
@@ -187,6 +196,22 @@ module RadiusTags
     name = tag.locals.meta_tag.name
     return "<a href=\"#{results_page}/#{name}\" class=\"tag\">#{name}</a>"
   end
+  
+  tag 'tags:each:if_first' do |tag|
+    tag.expand if tag.locals.is_first_meta_tag
+  end
+
+  tag 'tags:each:unless_first' do |tag|
+    tag.expand unless tag.locals.is_first_meta_tag
+  end
+
+  tag 'tags:each:if_last' do |tag|
+    tag.expand if tag.locals.is_last_meta_tag
+  end
+
+  tag 'tags:each:unless_last' do |tag|
+    tag.expand unless tag.locals.is_last_meta_tag
+  end
 
   desc "Set the scope for all tags in the database"
   tag "all_tags" do |tag|
@@ -195,7 +220,7 @@ module RadiusTags
   
   desc %{
     Iterates through each tag and allows you to specify the order: by popularity or by name.
-    The default is by name. You may also limit the search; the default is 5 results.
+§    The default is by name. You may also limit the search; the default is 5 results.
     
     Usage: <pre><code><r:all_tags:each [order="asc|desc"] [by="name|popularity"] limit="5">...</r:all_tags:each></code></pre>
   }
