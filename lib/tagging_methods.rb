@@ -58,9 +58,7 @@ TaggingMethods = Proc.new do
      sql << "AND taggings.meta_tag_id = meta_tags.id "
      sql << "AND pages.site_id = #{current_site.id} " if self.respond_to?(:current_site)
      
-     tag_list_condition = tag_list.map {|name| "\"#{name.strip.squeeze(' ')}\""}.join(", ")
-   
-     sql << "AND (meta_tags.name IN (#{sanitize_sql(tag_list_condition)})) "
+     sql << "AND (#{sanitize_sql(['meta_tags.name IN (?)', tag_list.map{|name| name.strip.squeeze(' ')}])}) "
      sql << "AND #{sanitize_sql(options[:conditions])} " if options[:conditions]
       
      columns = column_names.map do |column| 
