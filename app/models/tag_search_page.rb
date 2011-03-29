@@ -1,7 +1,28 @@
 class TagSearchPage < Page
 
   attr_accessor :requested_tag
+
   #### Tags ####
+
+  desc %{ The namespace for all tagsearch tags.}
+  tag 'tagsearch' do |tag|
+    tag.expand
+  end
+
+  desc %{ to show a index page, if the page was not able to find a tag, it is considered to be a index page}
+  tag 'tagsearch:if_index' do |tag|
+    if requested_tag.nil? || (requested_tag && requested_tag.blank?)
+      tag.expand
+    end
+  end
+
+  desc %{ resultpage, if the page got a tag, it is considered to be a result page}
+  tag 'tagsearch:unless_index' do |tag|
+    if requested_tag && ! requested_tag.blank?
+      tag.expand
+    end
+  end
+
   desc %{    The namespace for all search tags.}
   tag 'search' do |tag|
     tag.expand
@@ -68,8 +89,8 @@ class TagSearchPage < Page
   end
   
   def render
-    self.requested_tag = @request.parameters[:tag] unless requested_tag
-    self.title = "Tagged with #{requested_tag}" if requested_tag
+    self.requested_tag = @request.parameters[:tag] if @request.parameters[:tag]
+    self.title = "#{self.title} #{requested_tag}" if requested_tag
     
     super
   end

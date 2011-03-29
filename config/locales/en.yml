@@ -1,4 +1,5 @@
 en:
   tags_extensions:
+    no_tags_found: "<p>No tags found.</p>"
     tags: Tags
     type_a_tag: Separate tags with ;
