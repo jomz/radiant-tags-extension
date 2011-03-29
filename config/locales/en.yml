@@ -1,5 +1,4 @@
 en:
-  admin:
-    pages:
-      tag_field:
-        type_a_tag: Type a tag
+  tags_extensions:
+    tags: Tags
+    type_a_tag: Separate tags with ;
