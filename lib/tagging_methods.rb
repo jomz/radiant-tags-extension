@@ -29,8 +29,14 @@ TaggingMethods = Proc.new do
   
   alias :meta_tags= :tag_with
 
+  def ordered_meta_tags
+    # HACK: need to order by tagging to preserve creation order, otherwise
+    # list gets ordered by tag.id
+    meta_tags.find(:all, :order => 'taggings.id')
+  end
+
   def tag_list
-    meta_tags.map(&:name).join(MetaTag::DELIMITER)
+    ordered_meta_tags.map(&:name).join(MetaTag::DELIMITER)
   end
 
    # 
