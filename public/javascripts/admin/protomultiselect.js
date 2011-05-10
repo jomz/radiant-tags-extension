@@ -262,7 +262,8 @@ var FacebookList = Class.create(TextboxList, {
     children.each(function(el) { this.add({value:el.readAttribute('value'),caption:el.innerHTML}); }, this);
     
     $F(this.element).split(this.options.get('separator')).each(function(item) {
-      this.add({value:item,caption:item});
+      if (item != "")
+      	this.add({value:item,caption:item});
     }, this)
 
     // Loading the options list only once at initialize. 
