@@ -175,7 +175,7 @@ module RadiusTags
     Usage: <pre><code><r:tags:each [limit="4"]>...</r:tags:each></code></pre>
   }
   tag "tags:each" do |tag|
-    selected_tags = tag.locals.page.meta_tags
+    selected_tags = tag.locals.page.ordered_meta_tags
     if tag.attr['limit']
       selected_tags = selected_tags.first(tag.attr['limit'].to_i)
     end
