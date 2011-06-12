@@ -175,7 +175,7 @@ module RadiusTags
     Usage: <pre><code><r:tags:each [limit="4"]>...</r:tags:each></code></pre>
   }
   tag "tags:each" do |tag|
-    selected_tags = tag.locals.page.meta_tags
+    selected_tags = tag.locals.page.ordered_meta_tags
     if tag.attr['limit']
       selected_tags = selected_tags.first(tag.attr['limit'].to_i)
     end
@@ -304,7 +304,8 @@ module RadiusTags
     raise TagError, "`tagged' tag must contain a `with' attribute." unless (tag.attr['with'] || tag.locals.page.class_name = TagSearchPage)
     ttag = tag.attr['with'] || @request.parameters[:tag]
     
-    scope = scope_attr == 'current_page' ? Page.find_by_url(@request.request_uri) : Page.find_by_url(scope_attr)
+    scope_path = scope_attr == 'current_page' ? @request.request_uri : scope_attr
+    scope = Page.find_by_path scope_path
     return "The scope attribute must be a valid url to an existing page." if scope.nil? || scope.class_name.eql?('FileNotFoundPage')
     
     if with_any
