@@ -5,15 +5,15 @@ TaggingMethods = Proc.new do
   end
   alias_method_chain :valid?, :tags
   
-  def tag_with tags
+  def tag_with new_tags
     self.save if self.new_record?
     # just skip the whole method if the tags string hasn't changed
-    return if tags == tag_list
-    # do we need to delete any tags?
-    tags_to_delete = tag_list.split(MetaTag::DELIMITER) - tags.split(MetaTag::DELIMITER)
-    tags_to_delete.select{|t| meta_tags.delete(MetaTag.find_by_name(t))}
+    return if new_tags == tag_list
     
-    tags.split(MetaTag::DELIMITER).each do |tag|
+    # tags have changed, so we delete all taggings and re-create to preserve order
+    taggings.clear
+    
+    new_tags.split(MetaTag::DELIMITER).each do |tag|
       begin
         tag = MetaTag.find_or_initialize_by_name(tag.strip.squeeze(" "))
         meta_tags << tag unless meta_tags.include?(tag)
@@ -29,8 +29,14 @@ TaggingMethods = Proc.new do
   
   alias :meta_tags= :tag_with
 
+  def ordered_meta_tags
+    # HACK: need to order by tagging to preserve creation order, otherwise
+    # list gets ordered by tag.id
+    meta_tags.find(:all, :order => 'taggings.id')
+  end
+
   def tag_list
-    meta_tags.map(&:name).join(MetaTag::DELIMITER)
+    ordered_meta_tags.map(&:name).join(MetaTag::DELIMITER)
   end
 
    # 
