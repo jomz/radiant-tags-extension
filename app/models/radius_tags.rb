@@ -304,7 +304,8 @@ module RadiusTags
     raise TagError, "`tagged' tag must contain a `with' attribute." unless (tag.attr['with'] || tag.locals.page.class_name = TagSearchPage)
     ttag = tag.attr['with'] || @request.parameters[:tag]
     
-    scope = scope_attr == 'current_page' ? Page.find_by_url(@request.request_uri) : Page.find_by_url(scope_attr)
+    scope_path = scope_attr == 'current_page' ? @request.request_uri : scope_attr
+    scope = Page.find_by_path scope_path
     return "The scope attribute must be a valid url to an existing page." if scope.nil? || scope.class_name.eql?('FileNotFoundPage')
     
     if with_any
