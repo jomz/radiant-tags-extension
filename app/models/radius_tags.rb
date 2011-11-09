@@ -225,17 +225,19 @@ module RadiusTags
     Usage: <pre><code><r:all_tags:each [order="asc|desc"] [by="name|popularity"] limit="5">...</r:all_tags:each></code></pre>
   }
   tag "all_tags:each" do |tag|
-    by = tag.attr['by'] || 'name'
-    order = tag.attr['order'] || 'asc'
+    by = (tag.attr['by'] || 'name').strip
+    order = (tag.attr['order'] || 'asc').strip
     limit = tag.attr['limit'] || '5'
-    result = []
-    all_tags = MetaTag.cloud(:limit => limit, :order => order, :by => by)
-    all_tags.each do |t|
-      next if t.pages.empty? # skip unused tags
-      tag.locals.meta_tag = t
-      result << tag.expand
+    begin
+      all_tags = MetaTag.cloud(:limit => limit, :order => order, :by => by)
+    rescue => e
+      raise TagError, "all_tags:each: "+e.message
     end
-    result
+    used_tags = all_tags.reject { |t| t.pages.empty? }
+    used_tags.collect do |t|
+      tag.locals.meta_tag = t
+      tag.expand
+    end.join
   end
   
   desc "Renders the tag's name"

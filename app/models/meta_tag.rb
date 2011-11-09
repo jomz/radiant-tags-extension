@@ -35,34 +35,28 @@ class MetaTag < ActiveRecord::Base
       find_by_name(name) || create!(:name => name)
     end
 
-    def cloud(args = {})
-      args = {:by => 'popularity', :order => 'desc', :limit => 5}.merge(args)
-
-      find(:all, :select => 'meta_tags.*, count(*) as popularity',
-      :limit => args[:limit],
-      :joins => "JOIN taggings ON taggings.meta_tag_id = meta_tags.id",
-      :conditions => args[:conditions],
-      :group => "meta_tags.id, meta_tags.name",
-      :order => order_string(args) )
+    def cloud(options = {})
+      options = {:by => 'popularity', :order => 'asc', :limit => 5}.merge(options)
+      validate_by options[:by]
+      validate_order options[:order]
+      all(
+        :select => 'meta_tags.*, count(*) as popularity',
+        :limit => options[:limit],
+        :joins => "JOIN taggings ON taggings.meta_tag_id = meta_tags.id",
+        :conditions => options[:conditions],
+        :group => "meta_tags.id, meta_tags.name",
+        :order => "#{options[:by]} #{options[:order].upcase}"
+      )
     end
-
-    def order_string(attr)
-      by = (attr[:by]).strip
-        order = (attr[:order]).strip
-        order_string = ''
-        if self.new.attributes.keys.dup.push("popularity").include?(by)
-          order_string << by
-        else
-          raise TagError.new("`by' attribute of `each' tag must be set to a valid field name")
-        end
-        if order =~ /^(asc|desc)$/i
-          order_string << " #{$1.upcase}"
-        else
-          raise TagError.new(%{`order' attribute of `each' tag must be set to either "asc" or "desc"})
-        end
-
+    
+    def validate_by(by)
+      valid_field_names = column_names + ['popularity']
+      valid_field_names.include?(by) or raise %Q{“by” must be one of #{valid_field_names.to_sentence}, was #{by}}
     end
-
+    
+    def validate_order(order)
+      order =~ /^(asc|desc)$/i or raise %Q{“order” must be set to either “asc” or “desc”}
+    end
   end
   
   def <=>(other)
