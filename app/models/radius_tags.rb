@@ -220,7 +220,7 @@ module RadiusTags
   
   desc %{
     Iterates through each tag and allows you to specify the order: by popularity or by name.
-§    The default is by name. You may also limit the search; the default is 5 results.
+    The default is by name. You may also limit the search; the default is 5 results.
     
     Usage: <pre><code><r:all_tags:each [order="asc|desc"] [by="name|popularity"] limit="5">...</r:all_tags:each></code></pre>
   }
