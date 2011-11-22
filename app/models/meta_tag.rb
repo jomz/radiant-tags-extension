@@ -51,11 +51,11 @@ class MetaTag < ActiveRecord::Base
     
     def validate_by(by)
       valid_field_names = column_names + ['popularity']
-      valid_field_names.include?(by) or raise %Q{“by” must be one of #{valid_field_names.to_sentence}, was #{by}}
+      valid_field_names.include?(by) or raise %Q{"by" must be one of #{valid_field_names.to_sentence}, was #{by}}
     end
     
     def validate_order(order)
-      order =~ /^(asc|desc)$/i or raise %Q{“order” must be set to either “asc” or “desc”}
+      order =~ /^(asc|desc)$/i or raise %Q{"order" must be set to either "asc" or "desc"}
     end
   end
   
