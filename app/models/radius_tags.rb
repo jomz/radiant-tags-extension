@@ -41,7 +41,7 @@ module RadiusTags
       tag.locals.page = page
       output << tag.expand
     end
-    output
+    output.flatten.join('')
   end
   
   desc %{
@@ -64,7 +64,7 @@ module RadiusTags
       output << tag.expand
       first = false
     end
-    output
+    output.flatten.join('')
   end
   
   tag "if_has_related_by_tags" do |tag|
@@ -275,7 +275,7 @@ module RadiusTags
         result << tag.expand
       end
     end
-    result
+    result.flatten.join('')
   end
   
   private
