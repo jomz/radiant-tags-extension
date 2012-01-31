@@ -179,7 +179,7 @@ module RadiusTags
     if tag.attr['limit']
       selected_tags = selected_tags.first(tag.attr['limit'].to_i)
     end
-    selected_tags.enum_with_index.collect do |meta_tag, index|
+    selected_tags.each_with_index.collect do |meta_tag, index|
       tag.locals.meta_tag = meta_tag
       tag.locals.is_first_meta_tag = index == 0
       tag.locals.is_last_meta_tag = index == selected_tags.length - 1
