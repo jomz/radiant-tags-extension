@@ -5,15 +5,15 @@ TaggingMethods = Proc.new do
   end
   alias_method_chain :valid?, :tags
   
-  def tag_with new_tags
-    self.save if self.new_record?
+  def save_with_tags!
+    self.save_without_tags!
     # just skip the whole method if the tags string hasn't changed
-    return if new_tags == tag_list
+    return if @new_tags == tag_list
     
     # tags have changed, so we delete all taggings and re-create to preserve order
     taggings.clear
     
-    new_tags.split(MetaTag::DELIMITER).each do |tag|
+    @new_tags.split(MetaTag::DELIMITER).each do |tag|
       begin
         tag = MetaTag.find_or_initialize_by_name(tag.strip.squeeze(" "))
         meta_tags << tag unless meta_tags.include?(tag)
@@ -26,8 +26,11 @@ TaggingMethods = Proc.new do
       end
     end
   end
+  alias_method_chain :save!, :tags
   
-  alias :meta_tags= :tag_with
+  def meta_tags=(tags)
+    @new_tags = tags
+  end
 
   def ordered_meta_tags
     # HACK: need to order by tagging to preserve creation order, otherwise
