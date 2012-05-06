@@ -6,11 +6,11 @@ Gem::Specification.new do |s|
   s.name        = 'radiant-tags-extension'
   s.version     = RadiantTagsExtension::VERSION
   s.platform    = Gem::Platform::RUBY
-  s.authors     = ['Benny Degezelle']
-  s.email       = ['benny@gorilla-webdesign.be']
-  s.homepage    = 'http://ext.radiantcms.org/extensions/195-tags'
-  s.summary     = %q{Tagging for Radiant CMS}
-  s.description = %q{This extension enhances the page model with tagging capabilities, tagging as in \"2.0" and tagclouds.}
+  s.authors     = RadiantTagsExtension::AUTHORS
+  s.email       = RadiantTagsExtension::EMAIL
+  s.homepage    = RadiantTagsExtension::HOMEPAGE
+  s.summary     = RadiantTagsExtension::SUMMARY
+  s.description = RadiantTagsExtension::DESCRIPTION
   
   # TODO: add gem dependency on this instead of bundling it
   # s.add_dependency 'has_many_polymorphs'
