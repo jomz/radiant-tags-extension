@@ -15,7 +15,6 @@ class TagsExtension < Radiant::Extension
       Radiant::Config['tags.results_page_url'] = TagsExtension::DEFAULT_RESULTS_URL unless Radiant::Config['tags.results_page_url']
       Radiant::Config['tags.complex_strings'] = 'false' unless Radiant::Config['tags.complex_strings']
     end
-    TagSearchPage
     Page.send :include, RadiusTags
     begin
       MetaTag
