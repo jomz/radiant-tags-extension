@@ -13,7 +13,7 @@ class TagsExtension < Radiant::Extension
     raise "The Shards extension is required and must be loaded first!" unless defined?(admin.page)
     if Radiant::Config.table_exists?
       Radiant::Config['tags.results_page_url'] = TagsExtension::DEFAULT_RESULTS_URL unless Radiant::Config['tags.results_page_url']
-      Radiant::Config['tags.complex_strings'] = 'false' unless Radiant::Config['tags.complex_strings']
+      Radiant::Config['tags.complex_strings'] = 'true' unless Radiant::Config['tags.complex_strings']
     end
     Page.send :include, RadiusTags
     begin
