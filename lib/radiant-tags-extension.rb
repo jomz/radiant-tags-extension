@@ -1,5 +1,5 @@
 module RadiantTagsExtension
-  VERSION = '1.6.7'
+  VERSION = '1.6.8'
   AUTHORS = ['Benny Degezelle']
   EMAIL = ['benny@gorilla-webdesign.be']
   HOMEPAGE = 'http://ext.radiantcms.org/extensions/195-tags'
