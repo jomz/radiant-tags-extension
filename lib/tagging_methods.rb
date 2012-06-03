@@ -8,7 +8,7 @@ TaggingMethods = Proc.new do
   def save_with_tags!
     self.save_without_tags!
     # just skip the whole method if the tags string hasn't changed
-    return if @new_tags == tag_list
+    return self if @new_tags == tag_list
     
     # tags have changed, so we delete all taggings and re-create to preserve order
     taggings.clear
