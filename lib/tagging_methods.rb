@@ -13,7 +13,7 @@ TaggingMethods = Proc.new do
     # tags have changed, so we delete all taggings and re-create to preserve order
     taggings.clear
     
-    @new_tags.split(MetaTag::DELIMITER).each do |tag|
+    @new_tags.to_s.split(MetaTag::DELIMITER).each do |tag|
       begin
         tag = MetaTag.find_or_initialize_by_name(tag.strip.squeeze(" "))
         meta_tags << tag unless meta_tags.include?(tag)
