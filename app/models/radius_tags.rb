@@ -1,9 +1,9 @@
 module RadiusTags
   include Radiant::Taggable
   include ActionView::Helpers::TextHelper
-  
+
   class TagError < StandardError; end
-  
+
   desc %{
     Expands if a <pre><r:tagged with="" /></pre> call would return items. Takes the same options as the 'tagged' tag.
     The <pre><r:unless_tagged with="" /></pre> is also available.
@@ -23,10 +23,10 @@ module RadiusTags
       tag.expand if tag.locals.page.tag_list.empty?
     end
   end
-  
+
   desc %{
     Find all pages with certain tags, within in an optional scope. Additionally, you may set with_any to true to select pages that have any of the listed tags (opposed to all listed tags which is the provided default).
-    
+
     *Usage:*
     <pre><code><r:tagged with="shoes diesel" [scope="/fashion/cult-update"] [with_any="true"] [offset="number"] [limit="number"] [by="attribute"] [order="asc|desc"]>...</r:tagged></code></pre>
   }
@@ -43,10 +43,10 @@ module RadiusTags
     end
     output.flatten.join('')
   end
-  
+
   desc %{
     Find all pages related to the current page, based on all or any of the current page's tags. A scope attribute may be given to limit results to a certain site area.
-    
+
     *Usage:*
     <pre><code><r:related_by_tags [scope="/fashion/cult-update"] [offset="number"] [limit="number"] [by="attribute"] [order="asc|desc"]>...</r:related_by_tags></code></pre>
   }
@@ -66,7 +66,7 @@ module RadiusTags
     end
     output.flatten.join('')
   end
-  
+
   tag "if_has_related_by_tags" do |tag|
     tag.attr["with"] = tag.locals.page.tag_list.split(MetaTag::DELIMITER)
     tag.attr["with_any"] = true
@@ -75,22 +75,22 @@ module RadiusTags
     results -= [tag.locals.page]
     tag.expand if results.size > 0
   end
-  
+
   tag "related_by_tags:if_first" do |tag|
     tag.expand if tag.locals.first
   end
-  
+
   desc %{
     Render a Tag cloud
     The results_page attribute will default to #{Radiant::Config['tags.results_page_url']}
-    
+
     *Usage:*
     <pre><code><r:tag_cloud [limit="number"] [results_page="/some/url"] [scope="/some/url"]/></code></pre>
   }
   tag "tag_cloud" do |tag|
     tag_cloud = MetaTag.cloud(:limit => tag.attr['limit'] || 5).sort
     tag_cloud = filter_tags_to_url_scope(tag_cloud, tag.attr['scope']) unless tag.attr['scope'].nil?
-    
+
     results_page = tag.attr['results_page'] || Radiant::Config['tags.results_page_url']
     output = "<ol class=\"tag_cloud\">"
     if tag_cloud.length > 0
@@ -106,14 +106,14 @@ module RadiusTags
   desc %{
     Render a Tag cloud with div-tags
     The results_page attribute will default to #{Radiant::Config['tags.results_page_url']}
-    
+
     *Usage:*
     <pre><code><r:tag_cloud_div [limit="number"] [results_page="/some/url"] [scope="/some/url"]/></code></pre>
   }
   tag "tag_cloud_div" do |tag|
     tag_cloud = MetaTag.cloud(:limit => tag.attr['limit'] || 10).sort
     tag_cloud = filter_tags_to_url_scope(tag_cloud, tag.attr['scope']) unless tag.attr['scope'].nil?
-    
+
     results_page = tag.attr['results_page'] || Radiant::Config['tags.results_page_url']
     output = "<div class=\"tag_cloud\">"
     if tag_cloud.length > 0
@@ -125,18 +125,18 @@ module RadiusTags
     end
     output += "</div>"
   end
- 
+
   desc %{
     Render a Tag list, more for 'categories'-ish usage, i.e.: Cats (2) Logs (1) ...
     The results_page attribute will default to #{Radiant::Config['tags.results_page_url']}
-    
+
     *Usage:*
     <pre><code><r:tag_cloud_list [results_page="/some/url"] [scope="/some/url"]/></code></pre>
   }
   tag "tag_cloud_list" do |tag|
     tag_cloud = MetaTag.cloud({:limit => 100}).sort
     tag_cloud = filter_tags_to_url_scope(tag_cloud, tag.attr['scope']) unless tag.attr['scope'].nil?
-    
+
     results_page = tag.attr['results_page'] || Radiant::Config['tags.results_page_url']
     output = "<ul class=\"tag_list\">"
     if tag_cloud.length > 0
@@ -148,7 +148,7 @@ module RadiusTags
     end
     output += "</ul>"
   end
- 
+
   desc "List the current page's tags"
   tag "tag_list" do |tag|
     results_page = tag.attr['results_page'] || Radiant::Config['tags.results_page_url']
@@ -156,22 +156,22 @@ module RadiusTags
     tag.locals.page.tag_list.split(MetaTag::DELIMITER).each {|t| output << "<a href=\"#{results_page}/#{t}\" class=\"tag\">#{t}</a>"}
     output.join ", "
   end
-  
+
   desc "List the current page's tagsi as technorati tags. this should be included in the body of a post or in your rss feed"
   tag "tag_list_technorati" do |tag|
     output = []
     tag.locals.page.tag_list.split(MetaTag::DELIMITER).each {|t| output << "<a href=\"http://technorati.com/tag/#{ t.split(" ").join("+")}\" rel=\"tag\">#{t}</a>"}
     output.join ", "
   end
-  
+
   tag "tags" do |tag|
     tag.expand
   end
-  
+
   desc %{
     Cycles through the tags of the current page
     Accepts an optional @limit@ attributem default is to show everything.
-    
+
     Usage: <pre><code><r:tags:each [limit="4"]>...</r:tags:each></code></pre>
   }
   tag "tags:each" do |tag|
@@ -186,17 +186,17 @@ module RadiusTags
       tag.expand
     end
   end
-  
+
   tag "tags:each:name" do |tag|
     tag.locals.meta_tag.name
   end
-  
+
   tag "tags:each:link" do |tag|
     results_page = tag.attr['results_page'] || Radiant::Config['tags.results_page_url']
     name = tag.locals.meta_tag.name
     return "<a href=\"#{results_page}/#{url_encode(name)}\" class=\"tag\">#{name}</a>"
   end
-  
+
   tag 'tags:each:if_first' do |tag|
     tag.expand if tag.locals.is_first_meta_tag
   end
@@ -217,11 +217,11 @@ module RadiusTags
   tag "all_tags" do |tag|
     tag.expand
   end
-  
+
   desc %{
     Iterates through each tag and allows you to specify the order: by popularity or by name.
     The default is by name. You may also limit the search; the default is 5 results.
-    
+
     Usage: <pre><code><r:all_tags:each [order="asc|desc"] [by="name|popularity"] limit="5">...</r:all_tags:each></code></pre>
   }
   tag "all_tags:each" do |tag|
@@ -239,12 +239,12 @@ module RadiusTags
       tag.expand
     end.join
   end
-  
+
   desc "Renders the tag's name"
   tag "all_tags:each:name" do |tag|
     tag.locals.meta_tag.name
   end
-  
+
   tag "all_tags:each:link" do |tag|
     results_page = tag.attr['results_page'] || Radiant::Config['tags.results_page_url']
     name = tag.locals.meta_tag.name
@@ -260,12 +260,12 @@ module RadiusTags
     name = tag.locals.meta_tag.name
     "#{results_page}/#{url_encode(name)}"
   end
-  
+
   desc "Set the scope for the tag's pages"
   tag "all_tags:each:pages" do |tag|
     tag.expand
   end
-  
+
   desc "Iterates through each page"
   tag "all_tags:each:pages:each" do |tag|
     result = []
@@ -277,16 +277,16 @@ module RadiusTags
     end
     result.flatten.join('')
   end
-  
+
   private
-  
+
   def build_tag_cloud(tag_cloud, style_list)
     max, min = 0, 0
     tag_cloud.each do |tag|
       max = tag.popularity.to_i if tag.popularity.to_i > max
       min = tag.popularity.to_i if tag.popularity.to_i < min
     end
-    
+
     divisor = ((max - min) / style_list.size) + 1
 
     tag_cloud.each do |tag|
@@ -297,7 +297,7 @@ module RadiusTags
   def tag_item_url(name)
     "#{Radiant::Config['tags.results_page_url']}/#{name}"
   end
-  
+
   def find_with_tag_options(tag)
     options = tagged_with_options(tag)
     with_any = tag.attr['with_any'] || false
@@ -305,11 +305,11 @@ module RadiusTags
     results = []
     raise TagError, "`tagged' tag must contain a `with' attribute." unless (tag.attr['with'] || tag.locals.page.class_name = TagSearchPage)
     ttag = tag.attr['with'] || @request.parameters[:tag]
-    
+
     scope_path = scope_attr == 'current_page' ? @request.request_uri : scope_attr
     scope = Page.find_by_path scope_path
     return "The scope attribute must be a valid url to an existing page." if scope.nil? || scope.class_name.eql?('FileNotFoundPage')
-    
+
     if with_any
       Page.tagged_with_any(ttag, options).each do |page|
           next unless (page.ancestors.include?(scope) or page == scope)
@@ -323,12 +323,12 @@ module RadiusTags
     end
     results
   end
-  
+
   def tagged_with_options(tag)
     attr = tag.attr.symbolize_keys
-    
+
     options = {}
-    
+
     [:limit, :offset].each do |symbol|
       if number = attr[symbol]
         if number =~ /^\d{1,4}$/
@@ -338,7 +338,7 @@ module RadiusTags
         end
       end
     end
-    
+
     by = (attr[:by] || 'published_at').strip
     order = (attr[:order] || 'asc').strip
     order_string = ''
@@ -353,19 +353,19 @@ module RadiusTags
       raise TagError.new(%{`order' attribute of `each' tag must be set to either "asc" or "desc"})
     end
     options[:order] = order_string
-    
+
     status = (attr[:status] || 'published').downcase
     exclude = attr[:exclude_id] ? "AND pages.id != #{attr[:exclude_id]}" : ""
-    
+
     unless status == 'all'
       stat = Status[status]
       unless stat.nil?
-        options[:conditions] = ["(virtual = ?) and (status_id = ?) #{exclude} and (published_at <= ?)", false, stat.id, Time.current]
+        options[:conditions] = ["(pages.virtual = ?) and (pages.status_id = ?) #{exclude} and (pages.published_at <= ?)", false, stat.id, Time.current]
       else
         raise TagError.new(%{`status' attribute of `each' tag must be set to a valid status})
       end
     else
-      options[:conditions] = ["virtual = ? #{exclude}", false]
+      options[:conditions] = ["pages.virtual = ? #{exclude}", false]
     end
     options
   end
